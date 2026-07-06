@@ -215,6 +215,13 @@ body {
   font-weight: 700;
   color: var(--ink);
   font-size: 10pt;
+}
+
+/* Los <a> tienen su propio subrayado por defecto del navegador,
+   independiente del `text-decoration` del <span> que los contiene: hay que
+   pisarlo acá directo. */
+.cv-header__site a {
+  color: inherit;
   text-decoration: none;
 }
 

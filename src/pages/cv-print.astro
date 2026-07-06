@@ -52,6 +52,7 @@ const education = [
 // cada nombre es su propio hipervínculo real (Chrome preserva los <a href>
 // como anotaciones clicables al exportar a PDF).
 const SITE_URL = 'https://azanorivers.com'
+const CV_URL = 'https://cv.azanorivers.com'
 const socialPlatforms = [
     { label: 'GitHub', href: 'https://github.com/azanorivers' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/azanorivers' },
@@ -88,7 +89,9 @@ const socialPlatforms = [
                     </p>
                 </div>
                 <div class="cv-header__contact">
-                    <a class="cv-header__site" href={SITE_URL}>azanorivers.com</a>
+                    <span class="cv-header__site">
+                        <a href={SITE_URL}>azanorivers.com</a> / <a href={CV_URL}>cv.azanorivers.com</a>
+                    </span>
                     <span class="cv-header__handle">
                         @azanorivers —{' '}
                         {socialPlatforms.map((s, i) => (
