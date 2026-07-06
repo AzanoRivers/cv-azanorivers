@@ -1,0 +1,241 @@
+/* Se revela al hacer scroll (IntersectionObserver en el <script> del
+   componente agrega `.about-section--visible`), no es parte de la
+   orquestación de carga inicial. Orden de aparición: primero el contenido de
+   la izquierda, luego (con un pequeño retraso) las cards de la derecha. */
+.about-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  max-width: 90rem;
+  margin: 0 auto;
+  /* Poco padding-top en mobile: sumado al padding-bottom del banner, el hueco
+     antes de "Sobre Mí" quedaba enorme. */
+  padding: 0.25rem 1.25rem 4rem;
+}
+
+.about-section__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateX(-2rem);
+  transition: opacity 600ms ease-out, transform 600ms ease-out;
+}
+
+.about-section__cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  opacity: 0;
+  transform: translateX(2rem);
+  transition: opacity 600ms ease-out 220ms, transform 600ms ease-out 220ms;
+}
+
+.about-section--visible .about-section__content,
+.about-section--visible .about-section__cards {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.about-section__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Envoltorio clickeable (easter egg del "¡Clap!" de acá abajo): sin
+   fondo/borde propio, solo hace de ancla posicionada para las 8 posiciones
+   fijas del texto flotante. */
+.about-section__emoji-wrap {
+  position: relative;
+  display: block;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Ícono de líneas (no emoji a color): mismo lenguaje visual que el resto de
+   los íconos del sitio (stroke, sin relleno). Alineado a la izquierda, igual
+   que el resto del contenido (mobile y desktop). Vaivén sutil tipo saludo,
+   recién cuando la sección ya es visible. */
+.about-section__emoji {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: var(--darkpink);
+  transform-origin: bottom center;
+}
+
+.about-section--visible .about-section__emoji {
+  animation: about-emoji-wave 1400ms linear infinite;
+}
+
+/* Onda seno real (12deg * sin(2*pi*t)), muestreada cada 1/12 y con `linear`
+   entre puntos: con solo 3 paradas y `ease-in-out` la velocidad llegaba a
+   cero en cada una, y se sentía "se mueve, se para, se mueve, se para" en
+   vez de un vaivén fluido. */
+@keyframes about-emoji-wave {
+  0% {
+    transform: rotate(0deg);
+  }
+  8.33% {
+    transform: rotate(6deg);
+  }
+  16.67% {
+    transform: rotate(10.39deg);
+  }
+  25% {
+    transform: rotate(12deg);
+  }
+  33.33% {
+    transform: rotate(10.39deg);
+  }
+  41.67% {
+    transform: rotate(6deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  58.33% {
+    transform: rotate(-6deg);
+  }
+  66.67% {
+    transform: rotate(-10.39deg);
+  }
+  75% {
+    transform: rotate(-12deg);
+  }
+  83.33% {
+    transform: rotate(-10.39deg);
+  }
+  91.67% {
+    transform: rotate(-6deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Easter egg: cada clic crea uno de estos, en una de las 8 posiciones fijas
+   (elegida al azar por el <script>) alrededor de la mano, y se borra solo a
+   los 900ms. Con varios clics seguidos se pueden acumular varios a la vez. */
+.about-section__clap {
+  position: absolute;
+  font-family: var(--font-encode);
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--darkpink);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: about-clap-pop 900ms ease-out forwards;
+}
+
+@keyframes about-clap-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  45% {
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.about-section__clap--pos-0 {
+  top: -1.75rem;
+  left: 0.25rem;
+}
+
+.about-section__clap--pos-1 {
+  top: -1.5rem;
+  left: 1.75rem;
+}
+
+.about-section__clap--pos-2 {
+  top: 0.25rem;
+  left: 2.25rem;
+}
+
+.about-section__clap--pos-3 {
+  top: 1.75rem;
+  left: 1.75rem;
+}
+
+.about-section__clap--pos-4 {
+  top: 2rem;
+  left: 0.25rem;
+}
+
+.about-section__clap--pos-5 {
+  top: 1.75rem;
+  left: -2rem;
+}
+
+.about-section__clap--pos-6 {
+  top: 0.25rem;
+  left: -2.5rem;
+}
+
+.about-section__clap--pos-7 {
+  top: -1.5rem;
+  left: -2rem;
+}
+
+.about-section__title {
+  max-width: 24rem;
+  line-height: 1.05;
+}
+
+.about-section__paragraph:first-of-type {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 1200px) {
+  .about-section {
+    flex-direction: row;
+    align-items: center;
+    gap: 4rem;
+    padding: 6rem 3rem;
+  }
+
+  .about-section__content {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .about-section__title {
+    max-width: 28rem;
+  }
+
+  .about-section__cards {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-section__content,
+  .about-section__cards {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .about-section__emoji {
+    animation: none;
+  }
+
+  .about-section__clap {
+    animation: none;
+    opacity: 1;
+  }
+}

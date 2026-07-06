@@ -1,0 +1,285 @@
+/* Migrado de CreatedBySignature + NeonTextGlitch (azanolabs-web): en el
+   original es la única pieza del footer, un link centrado con la palabra
+   "AzanoRivers" en glitch neon (aberración cromática vía pseudo-elementos
+   que duplican el texto con `attr()`, cada uno corrido y con su propio
+   `text-shadow` de color, animados con `clip-path` en bandas). Portado acá
+   1:1 en mecánica, con los tokens de color de este proyecto en vez de los
+   `--neon-*` originales. */
+/* El padding-bottom extra es a propósito: en mobile/tablet el NavDock vive
+   fijo abajo (bottom: 1rem, ver NavDock.css) y flota ENCIMA del final de la
+   página, tapando el footer si no le dejamos ese espacio libre debajo. Recién
+   en desktop (min-width: 1200px) el dock se muda arriba, así que ahí vuelve
+   al padding normal. */
+.site-footer {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1.25rem 5rem;
+  border-top: 1px solid color-mix(in srgb, var(--lightblue) 15%, transparent);
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+
+.site-footer--visible {
+  opacity: 1;
+}
+
+@media (min-width: 1200px) {
+  .site-footer {
+    padding-bottom: 2.5rem;
+  }
+}
+
+.site-footer__signature {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  font-family: var(--font-plex);
+  font-size: 0.875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--white-70);
+  transition: color 200ms ease;
+}
+
+@media (min-width: 360px) {
+  .site-footer__signature {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (min-width: 440px) {
+  .site-footer__signature {
+    font-size: 1.0625rem;
+  }
+}
+
+@media (min-width: 600px) {
+  .site-footer__signature {
+    font-size: 1.1875rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .site-footer__signature {
+    font-size: 1.5rem;
+    letter-spacing: 0.25em;
+  }
+}
+
+.site-footer__signature:hover,
+.site-footer__signature:focus-visible {
+  color: var(--white-90);
+  outline: none;
+}
+
+/* Base del glitch: `isolation:isolate` + `contain` para que las bandas
+   animadas de los pseudo-elementos (más abajo) no obliguen a repintar nada
+   fuera de este span. */
+.site-footer__glitch {
+  position: relative;
+  display: inline-block;
+  font-weight: 700;
+  color: var(--white-90);
+  isolation: isolate;
+  contain: layout style paint;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--lightblue) 90%, transparent));
+}
+
+.site-footer__glitch::before,
+.site-footer__glitch::after {
+  content: attr(data-glitch-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  clip-path: inset(0 0 0 0);
+  z-index: -1;
+  will-change: transform, clip-path;
+}
+
+.site-footer__glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 var(--darkpink);
+  animation: site-footer-glitch-shift 6s infinite;
+}
+
+.site-footer__glitch::after {
+  left: -2px;
+  text-shadow: 2px 0 var(--lightblue);
+  animation: site-footer-glitch-shift-alt 5s infinite;
+}
+
+/* En mobile/tablet: sin clip-path ni transform (repintaría por frame). Solo
+   un parpadeo de opacidad en los pseudo-elementos, 100% compositor — el
+   `text-shadow` corrido ya da la aberración cromática sin mover nada. */
+@media (max-width: 1199px) {
+  .site-footer__glitch::before {
+    clip-path: none;
+    transform: none;
+    animation: site-footer-glitch-mobile-a 4s infinite;
+    will-change: opacity;
+  }
+
+  .site-footer__glitch::after {
+    clip-path: none;
+    transform: none;
+    animation: site-footer-glitch-mobile-b 3.2s infinite;
+    will-change: opacity;
+  }
+}
+
+@keyframes site-footer-glitch-mobile-a {
+  0%,
+  55% {
+    opacity: 0;
+  }
+  56% {
+    opacity: 0.7;
+  }
+  57% {
+    opacity: 0;
+  }
+  72% {
+    opacity: 0;
+  }
+  73% {
+    opacity: 0.5;
+  }
+  74% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes site-footer-glitch-mobile-b {
+  0%,
+  30% {
+    opacity: 0;
+  }
+  31% {
+    opacity: 0.6;
+  }
+  32% {
+    opacity: 0;
+  }
+  33% {
+    opacity: 0.4;
+  }
+  34% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes site-footer-glitch-shift {
+  0% {
+    clip-path: inset(42% 0 56% 0);
+    transform: translate3d(0, 0, 0) skew(0.3deg);
+  }
+  10% {
+    clip-path: inset(12% 0 41% 0);
+    transform: translate3d(-1px, 0, 0) skew(0.5deg);
+  }
+  20% {
+    clip-path: inset(63% 0 37% 0);
+    transform: translate3d(1px, 0, 0) skew(0.4deg);
+  }
+  30% {
+    clip-path: inset(86% 0 14% 0);
+    transform: translate3d(0, 0, 0) skew(0.3deg);
+  }
+  40% {
+    clip-path: inset(26% 0 40% 0);
+    transform: translate3d(-1px, 0, 0) skew(0.2deg);
+  }
+  50% {
+    clip-path: inset(76% 0 24% 0);
+    transform: translate3d(1px, 0, 0) skew(0.1deg);
+  }
+  60% {
+    clip-path: inset(68% 0 32% 0);
+    transform: translate3d(0, 0, 0) skew(0.5deg);
+  }
+  70% {
+    clip-path: inset(82% 0 18% 0);
+    transform: translate3d(-1px, 0, 0) skew(0.4deg);
+  }
+  80% {
+    clip-path: inset(54% 0 40% 0);
+    transform: translate3d(1px, 0, 0) skew(0.3deg);
+  }
+  90% {
+    clip-path: inset(60% 0 15% 0);
+    transform: translate3d(0, 0, 0) skew(0.2deg);
+  }
+  100% {
+    clip-path: inset(67% 0 33% 0);
+    transform: translate3d(0, 0, 0) skew(0.1deg);
+  }
+}
+
+@keyframes site-footer-glitch-shift-alt {
+  0% {
+    clip-path: inset(65% 0 0 0);
+    transform: translate3d(0, 0, 0) skew(0.4deg);
+  }
+  10% {
+    clip-path: inset(79% 0 21% 0);
+    transform: translate3d(1px, 0, 0) skew(0.6deg);
+  }
+  20% {
+    clip-path: inset(90% 0 10% 0);
+    transform: translate3d(-1px, 0, 0) skew(0.5deg);
+  }
+  30% {
+    clip-path: inset(71% 0 0 0);
+    transform: translate3d(0, 0, 0) skew(0.4deg);
+  }
+  40% {
+    clip-path: inset(56% 0 23% 0);
+    transform: translate3d(1px, 0, 0) skew(0.3deg);
+  }
+  50% {
+    clip-path: inset(36% 0 6% 0);
+    transform: translate3d(-1px, 0, 0) skew(0.2deg);
+  }
+  60% {
+    clip-path: inset(18% 0 28% 0);
+    transform: translate3d(0, 0, 0) skew(0.6deg);
+  }
+  70% {
+    clip-path: inset(45% 0 14% 0);
+    transform: translate3d(1px, 0, 0) skew(0.5deg);
+  }
+  80% {
+    clip-path: inset(33% 0 31% 0);
+    transform: translate3d(-1px, 0, 0) skew(0.4deg);
+  }
+  90% {
+    clip-path: inset(21% 0 56% 0);
+    transform: translate3d(0, 0, 0) skew(0.3deg);
+  }
+  100% {
+    clip-path: inset(84% 0 16% 0);
+    transform: translate3d(0, 0, 0) skew(0.2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer {
+    transition: none;
+    opacity: 1;
+  }
+
+  .site-footer__glitch::before,
+  .site-footer__glitch::after {
+    animation: none;
+    opacity: 0;
+  }
+}

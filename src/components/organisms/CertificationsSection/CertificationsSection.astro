@@ -1,0 +1,700 @@
+---
+import '@/components/organisms/CertificationsSection/CertificationsSection.css'
+import type { Translations } from '@/i18n'
+import { Award, X, ChevronLeft, ChevronRight } from 'lucide-react'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+
+// Bucket público de Cloudflare R2 (resources.azanolabs.com). Igual que antes:
+// son <img> planas, no pasan por astro:assets, así que una URL remota
+// funciona exactamente igual que una local.
+const R2_BASE = 'https://resources.azanolabs.com'
+const certifications = [
+    { file: 'Cert_Android_Nativ_p01.jpg', alt: 'Android Nativo' },
+    { file: 'Cert_Python_Kivy_udemy_p01.jpg', alt: 'Python Kivy' },
+    { file: 'Cert_ReactNative_Expo_p01.jpg', alt: 'React Native con Expo' },
+    { file: 'Certf-AI-basic_p01.jpg', alt: 'IA Básico' },
+    { file: 'Certf-APIREST-PRO_p01.jpg', alt: 'API REST Pro' },
+    { file: 'Certf-Api-JS-Practico_p01.jpg', alt: 'API en JavaScript Práctico' },
+    { file: 'Certf-Claude_101_p01.jpg', alt: 'Claude 101' },
+    { file: 'Certf-Claude_action_p01.jpg', alt: 'Claude en Acción' },
+    { file: 'Certf-Intro-Godotpdf_p01.jpg', alt: 'Introducción a Godot' },
+    { file: 'Certf-Mobilefirst_p01.jpg', alt: 'Mobile First' },
+    { file: 'Certf-POO_p01.jpg', alt: 'Programación Orientada a Objetos' },
+    { file: 'Certf-TS-Avanzado_p01.jpg', alt: 'TypeScript Avanzado' },
+    { file: 'Certf-TS-poo_p01.jpg', alt: 'TypeScript POO' },
+    { file: 'Certf-Tailwindcss_p01.jpg', alt: 'Tailwind CSS' },
+    { file: 'Certf-TanStack-Query_p01.jpg', alt: 'TanStack Query' },
+    { file: 'Certf-animaciones-css_p01.jpg', alt: 'Animaciones CSS' },
+    { file: 'Certf-arrays-js_p01.jpg', alt: 'Arrays en JavaScript' },
+    { file: 'Certf-astro_p01.jpg', alt: 'Astro' },
+    { file: 'Certf-astrobiologia_p01.jpg', alt: 'Astrobiología' },
+    { file: 'Certf-basico-javascript_p01.jpg', alt: 'JavaScript Básico' },
+    { file: 'Certf-comunicacion-satelite_p01.jpg', alt: 'Comunicación Satelital' },
+    { file: 'Certf-cosmologia_p01.jpg', alt: 'Cosmología' },
+    { file: 'Certf-diseno-programadores_p01.jpg', alt: 'Diseño para Programadores' },
+    { file: 'Certf-docker_p01.jpg', alt: 'Docker' },
+    { file: 'Certf-emociones-cripto_p01.jpg', alt: 'Emociones y Cripto' },
+    { file: 'Certf-estructuras-datos_p01.jpg', alt: 'Estructuras de Datos' },
+    { file: 'Certf-ethereum-developers_p01.jpg', alt: 'Ethereum Developers' },
+    { file: 'Certf-fabri-satelite_p01.jpg', alt: 'Fabricación de Satélites' },
+    { file: 'Certf-frameworks-javascript_p01.jpg', alt: 'Frameworks de JavaScript' },
+    { file: 'Certf-frontend-developer-v2_p01.jpg', alt: 'Frontend Developer v2' },
+    { file: 'Certf-frontend-developer_p01.jpg', alt: 'Frontend Developer' },
+    { file: 'Certf-funda-typescript_p01.jpg', alt: 'Fundamentos de TypeScript' },
+    { file: 'Certf-fundamentos-ethereumpdf_p01.jpg', alt: 'Fundamentos de Ethereum' },
+    { file: 'Certf-fundamentos-javascript_p01.jpg', alt: 'Fundamentos de JavaScript' },
+    { file: 'Certf-fundamentos-web3_p01.jpg', alt: 'Fundamentos de Web3' },
+    { file: 'Certf-historia-bitcoin_p01.jpg', alt: 'Historia de Bitcoin' },
+    { file: 'Certf-historia-ethereum_p01.jpg', alt: 'Historia de Ethereum' },
+    { file: 'Certf-historia-nft_p01.jpg', alt: 'Historia de los NFT' },
+    { file: 'Certf-history-cypherpunks_p01.jpg', alt: 'Historia de los Cypherpunks' },
+    { file: 'Certf-introduccion-tokens-ethereum_p01.jpg', alt: 'Introducción a Tokens de Ethereum' },
+    { file: 'Certf-inversion-Cripto_p01.jpg', alt: 'Inversión en Cripto' },
+    { file: 'Certf-javascript-poo-intermedio_p01.jpg', alt: 'JavaScript POO Intermedio' },
+    { file: 'Certf-javascript-poo_p01.jpg', alt: 'JavaScript POO' },
+    { file: 'Certf-javascript-profesional_p01.jpg', alt: 'JavaScript Profesional' },
+    { file: 'Certf-marca-developers_p01.jpg', alt: 'Marca Personal para Developers' },
+    { file: 'Certf-microcontroladores-ESP32_p01.jpg', alt: 'Microcontroladores ESP32' },
+    { file: 'Certf-mongodb_p01.jpg', alt: 'MongoDB' },
+    { file: 'Certf-react-estado_p01.jpg', alt: 'React: Manejo de Estado' },
+    { file: 'Certf-react-patrones-render_p01.jpg', alt: 'React: Patrones de Renderizado' },
+    { file: 'Certf-react-redux-profesional_p01.jpg', alt: 'React Redux Profesional' },
+    { file: 'Certf-react-router_p01.jpg', alt: 'React Router' },
+    { file: 'Certf-react-vite-tailwindcss_p01.jpg', alt: 'React, Vite y Tailwind CSS' },
+    { file: 'Certf-react_p01.jpg', alt: 'React' },
+    { file: 'Certf-sistemas-diseno_p01.jpg', alt: 'Sistemas de Diseño' },
+    { file: 'Certf-tailwind_p01.jpg', alt: 'Tailwind CSS' },
+    { file: 'Certf-transformaciones-transiciones_p01.jpg', alt: 'Transformaciones y Transiciones CSS' },
+    { file: 'Certf-vitejs_p01.jpg', alt: 'Vite.js' },
+    { file: 'Certf-web-components-javascript_p01.jpg', alt: 'Web Components con JavaScript' },
+    { file: 'Certf-webpack_p01.jpg', alt: 'Webpack' },
+    { file: 'Certf_Api_JS_p01.jpg', alt: 'API con JavaScript' },
+    { file: 'Certf_C++_Basico_p01.jpg', alt: 'C++ Básico' },
+    { file: 'Certf_C++_POO_p01.jpg', alt: 'C++ POO' },
+    { file: 'Certf_C++_Practice_p01.jpg', alt: 'C++ Práctica' },
+    { file: 'Certf_C_C++_p01.jpg', alt: 'C y C++' },
+    { file: 'Certf_Electricidad_Electronica_p01.jpg', alt: 'Electricidad y Electrónica' },
+    { file: 'Certf_Flujo_C_p01.jpg', alt: 'Flujo en C' },
+    { file: 'Certf_Funciones_C_p01.jpg', alt: 'Funciones en C' },
+    { file: 'Certf_Intro_C_p01.jpg', alt: 'Introducción a C' },
+    { file: 'Certf_Mani_DOM_p01.jpg', alt: 'Manipulación del DOM' },
+    { file: 'Certf_figma_p01.jpg', alt: 'Figma' },
+    { file: 'Certf_gid-layout_p01.jpg', alt: 'Grid Layout' },
+    { file: 'Certf_javascript-V8_p01.jpg', alt: 'JavaScript V8' },
+    { file: 'Certi_postgresql_platzi_p01.jpg', alt: 'PostgreSQL' },
+    { file: 'Certif_IoT_Basico_p01.jpg', alt: 'IoT Básico' },
+    { file: 'Certif_IoT_Intermedio_p01.jpg', alt: 'IoT Intermedio' },
+    { file: 'certf-asincronismo-js_p01.jpg', alt: 'Asincronismo en JavaScript' },
+    { file: 'certf-bootstrap_p01.jpg', alt: 'Bootstrap' },
+    { file: 'certf-css-grid_p01.jpg', alt: 'CSS Grid' },
+    { file: 'certf-ecmascript-6+_p01.jpg', alt: 'ECMAScript 6+' },
+    { file: 'certf-flexbox-css-grid_p01.jpg', alt: 'Flexbox y CSS Grid' },
+    { file: 'certf-javascript-practico_p01.jpg', alt: 'JavaScript Práctico' },
+    { file: 'certf-npm_p01.jpg', alt: 'NPM' },
+    { file: 'certf-scope_p01.jpg', alt: 'Scope en JavaScript' },
+    { file: 'certf_html-css_p01.jpg', alt: 'HTML y CSS' },
+].map(({ file, alt }) => ({ src: `${R2_BASE}/${file}`, alt }))
+
+// Se triplica el array para el efecto de loop infinito del strip: arranca
+// centrado en la copia del medio, y el <script> "teletransporta" en
+// silencio el scroll a la copia del medio apenas se acerca a cualquier borde.
+const stripImages = [...certifications, ...certifications, ...certifications]
+
+// Anillo virtual del modal (portado de HoloLightbox de AzanoLabs): siempre
+// hay que renderizar AL MENOS 5 tarjetas para que el wrap-around del anillo
+// ocurra siempre fuera de pantalla (a partir de d>=2.5). Con menos de 5
+// certificaciones reales, se repite el set las veces que hagan falta. Cada
+// tarjeta tiene su imagen FIJA para siempre (nunca se reasigna `src` en el
+// <script>): lo único que se anima es la posición continua de cada una.
+function computeVirtualTotal(imageCount: number) {
+    if (imageCount <= 1) return 1
+    return imageCount * Math.ceil(5 / imageCount)
+}
+const virtualTotal = computeVirtualTotal(certifications.length)
+const virtualSlots = Array.from({ length: virtualTotal }, (_, slotIndex) => {
+    const realIndex = slotIndex % certifications.length
+    return { ...certifications[realIndex], realIndex }
+})
+---
+
+<section id="certificaciones" class="certifications-section">
+    <div class="certifications-section__header">
+        <Award className="certifications-section__header-icon" strokeWidth={1.5} aria-hidden="true" />
+        <h2 class="certifications-section__title text-title" data-i18n="certifications.title">{t.certifications.title}</h2>
+        <p class="certifications-section__subtitle text-subtitle" data-i18n="certifications.subtitle">{t.certifications.subtitle}</p>
+    </div>
+
+    <div class="cert-strip">
+        <div class="cert-strip__scanlines" aria-hidden="true"></div>
+        <div class="cert-strip__edge cert-strip__edge--left" aria-hidden="true"></div>
+        <div class="cert-strip__edge cert-strip__edge--right" aria-hidden="true"></div>
+        <div class="cert-strip__scroll">
+            <div class="cert-strip__track">
+                {stripImages.map((cert, index) => (
+                    <button type="button" class="cert-tile" data-cert-index={index % certifications.length}>
+                        <span class="cert-skeleton" aria-hidden="true"></span>
+                        <img
+                            class="cert-tile__image"
+                            src={cert.src}
+                            alt={cert.alt}
+                            loading="lazy"
+                            width="320"
+                            height="200"
+                        />
+                        <span class="cert-tile__border" aria-hidden="true"></span>
+                        <span class="cert-tile__glint" aria-hidden="true"></span>
+                        <span class="cert-tile__bevel-line" aria-hidden="true"></span>
+                    </button>
+                ))}
+            </div>
+        </div>
+    </div>
+
+    <div class="cert-lightbox" id="cert-lightbox" aria-hidden="true">
+        <div class="cert-lightbox__backdrop-grid" aria-hidden="true"></div>
+        <div class="cert-lightbox__backdrop-scanlines" aria-hidden="true"></div>
+        <div class="cert-lightbox__backdrop-chroma" aria-hidden="true"></div>
+        <button
+            type="button"
+            class="cert-lightbox__close"
+            aria-label={t.certifications.closeLabel}
+            data-i18n-aria="certifications.closeLabel">
+            <X strokeWidth={1.5} aria-hidden="true" />
+        </button>
+        <button
+            type="button"
+            class="cert-lightbox__nav cert-lightbox__nav--prev"
+            aria-label={t.certifications.prevLabel}
+            data-i18n-aria="certifications.prevLabel">
+            <ChevronLeft strokeWidth={1.5} aria-hidden="true" />
+        </button>
+        <button
+            type="button"
+            class="cert-lightbox__nav cert-lightbox__nav--next"
+            aria-label={t.certifications.nextLabel}
+            data-i18n-aria="certifications.nextLabel">
+            <ChevronRight strokeWidth={1.5} aria-hidden="true" />
+        </button>
+        <div class="cert-lightbox__stage">
+            {virtualSlots.map((cert, slotIndex) => (
+                <button
+                    type="button"
+                    class="cert-lightbox__card"
+                    data-slot-index={slotIndex}
+                    data-real-index={cert.realIndex}>
+                    <div class="cert-lightbox__card-inner">
+                        <span class="cert-skeleton" aria-hidden="true"></span>
+                        <img
+                            class="cert-lightbox__image"
+                            src={cert.src}
+                            alt={cert.alt}
+                            loading="lazy"
+                            width="1920"
+                            height="1080"
+                        />
+                        <span class="cert-lightbox__holo-border" aria-hidden="true"></span>
+                    </div>
+                </button>
+            ))}
+        </div>
+        <div class="cert-lightbox__dots" aria-hidden="true">
+            {certifications.map((_, realIndex) => (
+                <span class="cert-lightbox__dot" data-dot-index={realIndex}></span>
+            ))}
+        </div>
+    </div>
+</section>
+
+<script>
+    // ————— Skeleton de carga: el scroll nunca espera por esto, solo tapa
+    // visualmente la imagen hasta que carga (importante sobre todo cuando
+    // las imágenes pasen a ser remotas, del R2). —————
+    function markImageLoaded(img: HTMLImageElement) {
+        const skeleton = img.previousElementSibling
+        if (skeleton?.classList.contains('cert-skeleton')) {
+            skeleton.classList.add('cert-skeleton--loaded')
+        }
+    }
+
+    function watchImageLoad(img: HTMLImageElement) {
+        if (img.complete && img.naturalWidth > 0) {
+            markImageLoaded(img)
+        } else {
+            img.addEventListener('load', () => markImageLoaded(img), { once: true })
+        }
+    }
+
+    document.querySelectorAll<HTMLImageElement>('.cert-tile__image').forEach(watchImageLoad)
+
+    // ————— Strip: loop infinito + arrastre con mouse en desktop —————
+    const stripScroll = document.querySelector<HTMLElement>('.cert-strip__scroll')
+    const stripTrack = document.querySelector<HTMLElement>('.cert-strip__track')
+
+    if (stripScroll && stripTrack) {
+        let singleSetWidth = 0
+
+        const centerStrip = () => {
+            singleSetWidth = stripTrack.scrollWidth / 3
+            stripScroll.scrollLeft = singleSetWidth
+        }
+
+        // Recién cuando las imágenes ya tienen tamaño real en el layout.
+        requestAnimationFrame(centerStrip)
+        window.addEventListener('resize', centerStrip)
+
+        stripScroll.addEventListener(
+            'scroll',
+            () => {
+                if (singleSetWidth === 0) return
+                if (stripScroll.scrollLeft < singleSetWidth * 0.5) {
+                    stripScroll.scrollLeft += singleSetWidth
+                } else if (stripScroll.scrollLeft > singleSetWidth * 1.5) {
+                    stripScroll.scrollLeft -= singleSetWidth
+                }
+            },
+            { passive: true },
+        )
+
+        let isStripDragging = false
+        let stripDragStartX = 0
+        let stripDragStartScrollLeft = 0
+
+        stripScroll.addEventListener('mousedown', (event) => {
+            isStripDragging = true
+            stripDragStartX = event.pageX
+            stripDragStartScrollLeft = stripScroll.scrollLeft
+            stripScroll.classList.add('cert-strip__scroll--dragging')
+        })
+
+        window.addEventListener('mousemove', (event) => {
+            if (!isStripDragging) return
+            event.preventDefault()
+            stripScroll.scrollLeft = stripDragStartScrollLeft - (event.pageX - stripDragStartX)
+        })
+
+        const stopStripDragging = () => {
+            isStripDragging = false
+            stripScroll.classList.remove('cert-strip__scroll--dragging')
+        }
+
+        window.addEventListener('mouseup', stopStripDragging)
+        stripScroll.addEventListener('mouseleave', stopStripDragging)
+    }
+
+    // ————— Lightbox: anillo virtual 3D + física de velocidad/fricción —————
+    // Portado del HoloLightbox real de AzanoLabs. La idea central: cada
+    // tarjeta del anillo tiene su imagen FIJA para siempre (nunca se
+    // reasigna `src`), y lo único que cambia es un `offset` continuo
+    // (número con decimales) que se anima con velocidad+fricción en un
+    // loop de rAF. La posición/opacidad/ángulo de CADA tarjeta se recalcula
+    // en cada frame en función de su distancia a ese offset. Esto elimina
+    // de raíz el parpadeo (no hay swap de imágenes) y el hueco en swipes
+    // largos (siempre hay tantas tarjetas como haga falta, todas
+    // posicionadas en todo momento, no solo 5 roles fijos).
+    const lightbox = document.querySelector<HTMLElement>('#cert-lightbox')
+    const lightboxStage = document.querySelector<HTMLElement>('.cert-lightbox__stage')
+    const dotsContainer = document.querySelector<HTMLElement>('.cert-lightbox__dots')
+    const closeButton = document.querySelector('.cert-lightbox__close')
+    const prevButton = document.querySelector('.cert-lightbox__nav--prev')
+    const nextButton = document.querySelector('.cert-lightbox__nav--next')
+
+    const cards = lightboxStage ? Array.from(lightboxStage.querySelectorAll<HTMLButtonElement>('.cert-lightbox__card')) : []
+    const cardInners = cards.map((card) => card.querySelector<HTMLElement>('.cert-lightbox__card-inner')!)
+    const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll<HTMLElement>('.cert-lightbox__dot')) : []
+
+    document.querySelectorAll<HTMLImageElement>('.cert-lightbox__image').forEach(watchImageLoad)
+
+    if (lightbox && lightboxStage && cards.length > 0) {
+        const total = cards.length
+        const imgCount = dots.length || total
+
+        // Distancia con signo más corta de `slotIdx` a `offset`, considerando
+        // el wrap-around del anillo (p. ej. con total=6: slot=5, offset=0.2
+        // → d=4.8 → 4.8-6=-1.2, la tarjeta está apenas pasando por la
+        // izquierda, no dando toda la vuelta por la derecha).
+        function cardDelta(slotIdx: number, offset: number, total: number) {
+            let d = slotIdx - offset
+            d = d - total * Math.round(d / total)
+            return d
+        }
+
+        function modInt(n: number, total: number) {
+            return ((Math.round(n) % total) + total) % total
+        }
+
+        // Aplica transform/opacidad/filtro/z-index a cada tarjeta según su
+        // distancia continua al offset actual. Se llama desde el loop de
+        // rAF: escribe directo sobre el DOM (sin React ni reflow por clase),
+        // así que tolera correr en cada frame durante el arrastre o la
+        // inercia sin trabarse.
+        function applyCardTransforms(offset: number, viewportW: number) {
+            const isSmall = viewportW < 1280
+            const isTiny = viewportW < 440
+
+            cards.forEach((card, slotIdx) => {
+                const d = cardDelta(slotIdx, offset, total)
+                const a = Math.abs(d)
+                const s = d < 0 ? -1 : 1
+
+                card.classList.toggle('cert-lightbox__card--left', d < -0.05)
+                card.classList.toggle('cert-lightbox__card--right', d > 0.05)
+                // 0.5, no un umbral angosto: reparte todo el recorrido en
+                // bandas contiguas de una tarjeta cada una, así SIEMPRE hay
+                // exactamente una clasificada "activa" en cualquier punto
+                // intermedio del arrastre (con un umbral angosto, durante
+                // casi todo el gesto ninguna tarjeta caía en rango y en
+                // mobile, que oculta todo lo no-activo, se veía como que la
+                // imagen simplemente desaparecía a mitad de camino).
+                card.classList.toggle('cert-lightbox__card--active', a < 0.5)
+
+                if (a > 2.4) {
+                    card.style.opacity = '0'
+                    card.style.pointerEvents = 'none'
+                    return
+                }
+
+                let tx: number, tz: number, ry: number, opacity: number, bright: number, sat: number, zi: number
+
+                if (a <= 1) {
+                    const arc = Math.sin((a * Math.PI) / 2)
+                    tx = s * a * viewportW * 0.46
+                    tz = -arc * 300
+                    ry = -s * a * 52
+                    opacity = 1 - a * 0.22
+                    bright = 1.0 - a * 0.12
+                    sat = 1.1 - a * 0.1
+                    zi = 5 + Math.round((1 - a) * 5)
+                } else {
+                    const t = a - 1
+                    tx = s * (viewportW * 0.46 + t * viewportW * 0.68)
+                    tz = -300 - t * 200
+                    ry = -s * (52 - t * 18)
+                    opacity = Math.max(0, 0.78 - t * 0.78)
+                    bright = 0.88 - t * 0.5
+                    sat = 1.0 - t * 0.65
+                    zi = Math.max(0, 4 - Math.round(t * 3))
+                }
+
+                const st = card.style
+                st.transform = `translateX(${tx.toFixed(0)}px) translateZ(${tz.toFixed(0)}px) rotateY(${ry.toFixed(1)}deg)`
+                st.opacity = Math.max(0, opacity).toFixed(3)
+                st.filter = `brightness(${bright.toFixed(2)}) saturate(${sat.toFixed(2)})`
+                st.zIndex = String(Math.max(0, zi))
+                st.pointerEvents = a < 1.5 ? 'auto' : 'none'
+                st.cursor = a < 0.15 ? 'default' : 'pointer'
+
+                const inner = cardInners[slotIdx]
+                if (inner) {
+                    const vwActive = isTiny ? 92 : isSmall ? 80 : 58
+                    const vwSide = isSmall ? 44 : 40
+                    const vwEdge = 22
+                    const maxActive = isTiny ? viewportW * 0.92 : isSmall ? viewportW * 0.8 : 820
+                    const maxSide = isSmall ? viewportW * 0.44 : 520
+                    const maxEdge = 260
+
+                    let vw: number, maxPx: number
+                    if (a <= 1) {
+                        vw = vwActive - a * (vwActive - vwSide)
+                        maxPx = maxActive - a * (maxActive - maxSide)
+                    } else {
+                        const t = a - 1
+                        vw = Math.max(vwEdge, vwSide - t * (vwSide - vwEdge))
+                        maxPx = Math.max(maxEdge, maxSide - t * (maxSide - maxEdge))
+                    }
+                    inner.style.width = `min(${vw.toFixed(1)}vw, ${maxPx.toFixed(0)}px)`
+                }
+            })
+        }
+
+        function updateActiveDot(realIdx: number) {
+            dots.forEach((dot, i) => dot.classList.toggle('cert-lightbox__dot--active', i === realIdx))
+        }
+
+        let offset = 0
+        let velocity = 0
+        let rafId = 0
+        let viewportW = window.innerWidth
+
+        window.addEventListener('resize', () => {
+            viewportW = window.innerWidth
+            applyCardTransforms(offset, viewportW)
+        })
+
+        // Loop de inercia: la velocidad decae por fricción cada frame; al
+        // caer por debajo de SNAP_VEL, en vez de trabar en seco, hace un
+        // "lerp" corto hacia el entero más cercano (se siente como un freno
+        // suave, no un corte). Idéntico a la física real de AzanoLabs.
+        const FRICTION = 0.84
+        const SNAP_VEL = 0.004
+
+        function startAnimation() {
+            cancelAnimationFrame(rafId)
+            const loop = () => {
+                velocity *= FRICTION
+                offset += velocity
+                offset = ((offset % total) + total) % total
+                applyCardTransforms(offset, viewportW)
+                updateActiveDot(modInt(offset, total) % imgCount)
+
+                if (Math.abs(velocity) < SNAP_VEL) {
+                    velocity = 0
+                    const snapTo = modInt(offset, total)
+                    const lerp = () => {
+                        let diff = snapTo - offset
+                        diff -= total * Math.round(diff / total)
+                        if (Math.abs(diff) < 0.0008) {
+                            offset = snapTo
+                            applyCardTransforms(offset, viewportW)
+                            updateActiveDot(snapTo % imgCount)
+                            return
+                        }
+                        offset += diff * 0.16
+                        offset = ((offset % total) + total) % total
+                        applyCardTransforms(offset, viewportW)
+                        rafId = requestAnimationFrame(lerp)
+                    }
+                    rafId = requestAnimationFrame(lerp)
+                    return
+                }
+                rafId = requestAnimationFrame(loop)
+            }
+            rafId = requestAnimationFrame(loop)
+        }
+
+        function goNext() {
+            velocity = 0.12
+            startAnimation()
+        }
+        function goPrev() {
+            velocity = -0.12
+            startAnimation()
+        }
+
+        let savedScrollY = 0
+
+        // El bloqueo de scroll usa `position: fixed` en el body (ver
+        // globals.css, `.scroll-locked`), y a diferencia del bloqueo inicial
+        // de carga (que siempre arranca en scroll 0), este modal se puede
+        // abrir en cualquier punto de la página: sin compensar `top`, el
+        // body saltaría a la parte de arriba apenas se fija.
+        function lockScroll() {
+            savedScrollY = window.scrollY
+            document.body.style.top = `-${savedScrollY}px`
+            document.documentElement.classList.add('scroll-locked')
+        }
+
+        // OJO: `window.scrollTo(0, y)` (la forma de 2 argumentos) hereda el
+        // `scroll-behavior: smooth` global (ver globals.css) y ANIMA desde 0
+        // hasta `savedScrollY` — exactamente el bug de "el scroll salta hasta
+        // arriba y después baja solo" que se reportó. Con `behavior: 'instant'`
+        // explícito no anima nada, se restaura de una.
+        function unlockScroll() {
+            document.documentElement.classList.remove('scroll-locked')
+            document.body.style.top = ''
+            window.scrollTo({ top: savedScrollY, behavior: 'instant' })
+        }
+
+        function onKeydown(event: KeyboardEvent) {
+            if (event.key === 'Escape') closeLightbox()
+            if (event.key === 'ArrowRight') goNext()
+            if (event.key === 'ArrowLeft') goPrev()
+        }
+
+        function openLightbox(realIndex: number) {
+            cancelAnimationFrame(rafId)
+            velocity = 0
+            offset = realIndex
+            applyCardTransforms(offset, viewportW)
+            updateActiveDot(realIndex)
+            lightbox!.classList.add('cert-lightbox--open')
+            lightbox!.setAttribute('aria-hidden', 'false')
+            lockScroll()
+            document.addEventListener('keydown', onKeydown)
+        }
+
+        function closeLightbox() {
+            lightbox!.classList.add('cert-lightbox--closing')
+            lightbox!.setAttribute('aria-hidden', 'true')
+            document.removeEventListener('keydown', onKeydown)
+            cancelAnimationFrame(rafId)
+            setTimeout(() => {
+                lightbox!.classList.remove('cert-lightbox--open', 'cert-lightbox--closing')
+                unlockScroll()
+            }, 220)
+        }
+
+        const tiles = Array.from(document.querySelectorAll<HTMLButtonElement>('.cert-tile'))
+        tiles.forEach((tile) => {
+            const index = Number(tile.dataset.certIndex)
+            tile.addEventListener('click', () => openLightbox(index))
+        })
+
+        closeButton?.addEventListener('click', closeLightbox)
+        prevButton?.addEventListener('click', () => goPrev())
+        nextButton?.addEventListener('click', () => goNext())
+
+        lightbox.addEventListener('click', (event) => {
+            if (event.target === lightbox) closeLightbox()
+        })
+
+        // Cualquier tarjeta visible es clickeable (igual que en AzanoLabs):
+        // el lado en el que está (izquierda/derecha del centro, calculado en
+        // el momento del click con el offset real, no una clase fija) decide
+        // si centra hacia atrás o hacia adelante. La activa no hace nada.
+        cards.forEach((card, slotIdx) => {
+            card.addEventListener('click', () => {
+                const d = cardDelta(slotIdx, offset, total)
+                if (d > 0.15) goNext()
+                else if (d < -0.15) goPrev()
+            })
+        })
+
+        // Arrastre (touch + mouse): sigue el gesto en tiempo real moviendo
+        // el `offset` directo (no una pista aparte). A diferencia de la
+        // rueda (que sí puede recorrer varias imágenes en un gesto largo,
+        // porque ahí se ven varias a la vez), acá se clampea a ±1 imagen por
+        // gesto sin importar cuán lejos/fuerte se arrastre: sin esto, un
+        // swipe fuerte en mobile (donde solo se ve 1 imagen, sin cross-fade)
+        // se veía como un parpadeo descontrolado saltando 2+ imágenes.
+        const SLIDE_PX = 450
+        let isDragging = false
+        let dragStartX = 0
+        let dragStartOffset = 0
+
+        function startDrag(clientX: number) {
+            cancelAnimationFrame(rafId)
+            isDragging = true
+            dragStartX = clientX
+            dragStartOffset = offset
+        }
+
+        function moveDrag(clientX: number) {
+            if (!isDragging) return
+            const rawOffset = dragStartOffset - (clientX - dragStartX) / SLIDE_PX
+            offset = Math.max(dragStartOffset - 1, Math.min(dragStartOffset + 1, rawOffset))
+            offset = ((offset % total) + total) % total
+            applyCardTransforms(offset, viewportW)
+            updateActiveDot(modInt(offset, total) % imgCount)
+        }
+
+        // Asienta suavemente en `target` con el mismo "ease-out" que usa el
+        // frenado por fricción, pero sin dejar que la velocidad de salida
+        // del gesto siga sumando distancia por su cuenta (esa suma era lo
+        // que hacía que un swipe fuerte se "descontrolara" pasando 2+
+        // imágenes de un tirón).
+        function animateToTarget(target: number) {
+            cancelAnimationFrame(rafId)
+            const settle = () => {
+                let diff = target - offset
+                diff -= total * Math.round(diff / total)
+                if (Math.abs(diff) < 0.0008) {
+                    offset = ((target % total) + total) % total
+                    applyCardTransforms(offset, viewportW)
+                    updateActiveDot(modInt(offset, total) % imgCount)
+                    return
+                }
+                offset += diff * 0.22
+                offset = ((offset % total) + total) % total
+                applyCardTransforms(offset, viewportW)
+                updateActiveDot(modInt(offset, total) % imgCount)
+                rafId = requestAnimationFrame(settle)
+            }
+            rafId = requestAnimationFrame(settle)
+        }
+
+        function endDrag() {
+            if (!isDragging) return
+            isDragging = false
+            const diff = offset - dragStartOffset
+            const target = diff > 0.5 ? dragStartOffset + 1 : diff < -0.5 ? dragStartOffset - 1 : dragStartOffset
+            velocity = 0
+            animateToTarget(target)
+        }
+
+        lightbox.addEventListener('touchstart', (event) => startDrag(event.touches[0].clientX), { passive: true })
+        lightbox.addEventListener(
+            'touchmove',
+            (event) => {
+                if (!isDragging) return
+                event.preventDefault()
+                moveDrag(event.touches[0].clientX)
+            },
+            { passive: false },
+        )
+        lightbox.addEventListener('touchend', endDrag)
+
+        lightbox.addEventListener('mousedown', (event) => {
+            const target = event.target as HTMLElement
+            if (target === lightbox || target.closest('.cert-lightbox__close, .cert-lightbox__nav')) return
+            event.preventDefault()
+            startDrag(event.clientX)
+        })
+        window.addEventListener('mousemove', (event) => moveDrag(event.clientX))
+        window.addEventListener('mouseup', endDrag)
+
+        // Trackpad: cada evento de rueda suma un impulso de velocidad
+        // (clampeado) a la MISMA física de fricción — un swipe largo/rápido
+        // solo hace que la velocidad tope su máximo, nunca que el offset
+        // salte discreto, así que jamás deja "huecos" ni se traba a medio
+        // camino sin importar cuán largo sea el gesto.
+        const lastWheelTime = { current: 0 }
+        lightbox.addEventListener(
+            'wheel',
+            (event) => {
+                event.preventDefault()
+                const now = performance.now()
+                if (now - lastWheelTime.current > 250) velocity = 0
+                lastWheelTime.current = now
+
+                const raw = Math.abs(event.deltaX) >= Math.abs(event.deltaY) ? event.deltaX : event.deltaY
+                const delta = Math.max(-8, Math.min(8, raw))
+                velocity += delta / SLIDE_PX
+                velocity = Math.max(-0.18, Math.min(0.18, velocity))
+                startAnimation()
+            },
+            { passive: false },
+        )
+
+        // Posición inicial correcta antes de la primera apertura.
+        applyCardTransforms(offset, viewportW)
+        updateActiveDot(0)
+    }
+
+    // ————— Scroll-reveal de toda la sección (mismo patrón del resto del sitio) —————
+    const section = document.querySelector('.certifications-section')
+
+    if (section) {
+        let isIntersecting = false
+        let orchestrationDone = !document.documentElement.classList.contains('is-loading')
+
+        const tryReveal = () => {
+            if (!isIntersecting || !orchestrationDone) return
+            section.classList.add('certifications-section--visible')
+            observer.disconnect()
+            document.removeEventListener('scroll-unlocked', onOrchestrationDone)
+        }
+
+        const onOrchestrationDone = () => {
+            orchestrationDone = true
+            tryReveal()
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    isIntersecting = true
+                    tryReveal()
+                }
+            },
+            { threshold: 0.1 },
+        )
+
+        observer.observe(section)
+        if (!orchestrationDone) document.addEventListener('scroll-unlocked', onOrchestrationDone)
+    }
+</script>

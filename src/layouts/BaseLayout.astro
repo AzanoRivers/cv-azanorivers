@@ -1,0 +1,97 @@
+---
+import '@/styles/globals.css'
+import { BootIntro, FloatingLeaves } from '@/components/atoms'
+
+interface Props {
+    title: string
+    description: string
+    preloadImageSrc?: string
+}
+
+const { title, description, preloadImageSrc } = Astro.props
+const SITE_URL = 'https://cv.azanorivers.com'
+const OG_IMAGE = `${SITE_URL}/images/azanoriverslink.webp`
+---
+
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <script is:inline>
+            /* Se ejecuta antes de pintar: si el navegador restauró una posición
+               de scroll (F5 a mitad de página), la fuerza arriba sin efecto
+               smooth, y bloquea el scroll hasta que termine la orquestación
+               de carga (ver script al final del body). */
+            if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
+            // behavior: 'instant' explícito: con scroll-behavior:smooth en el
+            // html (ver globals.css), la forma scrollTo(x, y) hereda ese smooth
+            // por CSS y este salto al recargar dejaría de ser instantáneo.
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+            document.documentElement.classList.add('is-loading')
+        </script>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#1A4C79" />
+        <meta name="description" content={description} />
+        <title>{title}</title>
+
+        {preloadImageSrc && <link rel="preload" as="image" href={preloadImageSrc} fetchpriority="high" />}
+
+        <!-- Open Graph (Facebook, LinkedIn, WhatsApp, etc.) -->
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={SITE_URL} />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/webp" />
+        <meta property="og:image:alt" content="Logo de AzanoRivers" />
+
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={OG_IMAGE} />
+    </head>
+    <body class="bg-az-grid min-h-screen w-full">
+        <FloatingLeaves />
+        <BootIntro />
+        <slot />
+        <script>
+            import '@/i18n/client'
+        </script>
+        <script>
+            /* Libera el scroll cuando termina de aparecer LanguageSelector
+               (última pieza de la orquestación de carga): el primer
+               `animationend` que sube desde ese elemento es su propia entrada
+               en opacidad, así que no hace falta duplicar ningún tiempo en ms
+               acá, se sincroniza solo con la animación real. */
+            const languageSelector = document.querySelector('.language-selector')
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            let unlocked = false
+
+            const unlockScroll = () => {
+                if (unlocked) return
+                unlocked = true
+                document.documentElement.classList.remove('is-loading')
+                // Otras secciones (ej. AboutSection) escuchan esto para no
+                // revelarse por scroll-reveal antes de que termine la
+                // orquestación, aunque ya estén visibles en pantallas grandes.
+                document.dispatchEvent(new Event('scroll-unlocked'))
+            }
+
+            if (languageSelector && !reducedMotion) {
+                languageSelector.addEventListener('animationend', unlockScroll, { once: true })
+                // Red de seguridad: si por lo que sea el evento no dispara, no
+                // deja el scroll bloqueado para siempre.
+                setTimeout(unlockScroll, 8000)
+            } else {
+                unlockScroll()
+            }
+        </script>
+    </body>
+</html>

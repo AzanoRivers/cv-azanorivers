@@ -1,0 +1,80 @@
+---
+import '@/components/organisms/ContactSection/ContactSection.css'
+import { EmailReveal } from '@/components/molecules'
+import type { Translations } from '@/i18n'
+import { Mail } from 'lucide-react'
+import { SiGithub, SiX, SiInstagram, SiTelegram } from 'react-icons/si'
+import { FaLinkedin } from 'react-icons/fa'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+
+const socials = [
+    { key: 'github', href: 'https://github.com/azanorivers', label: t.contact.github, Icon: SiGithub },
+    { key: 'linkedin', href: 'https://www.linkedin.com/in/azanorivers', label: t.contact.linkedin, Icon: FaLinkedin },
+    { key: 'twitter', href: 'https://twitter.com/azanorivers', label: t.contact.twitter, Icon: SiX },
+    { key: 'instagram', href: 'https://www.instagram.com/azanorivers', label: t.contact.instagram, Icon: SiInstagram },
+    { key: 'telegram', href: 'https://t.me/azanorivers', label: t.contact.telegram, Icon: SiTelegram },
+]
+---
+
+<section id="contacto" class="contact-section">
+    <div class="contact-section__header">
+        <Mail className="contact-section__header-icon" strokeWidth={1.5} aria-hidden="true" />
+        <h2 class="contact-section__title text-title" data-i18n="contact.title">{t.contact.title}</h2>
+        <p class="contact-section__subtitle text-subtitle" data-i18n="contact.subtitle">{t.contact.subtitle}</p>
+    </div>
+    <div class="contact-section__socials">
+        {socials.map(({ key, href, label, Icon }) => (
+            <a
+                class="contact-section__social"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                data-i18n-aria={`contact.${key}`}>
+                <Icon className="contact-section__social-icon" aria-hidden="true" />
+            </a>
+        ))}
+    </div>
+    <div class="contact-section__email">
+        <EmailReveal t={t} />
+    </div>
+</section>
+
+<script>
+    const section = document.querySelector('.contact-section')
+
+    if (section) {
+        let isIntersecting = false
+        let orchestrationDone = !document.documentElement.classList.contains('is-loading')
+
+        const tryReveal = () => {
+            if (!isIntersecting || !orchestrationDone) return
+            section.classList.add('contact-section--visible')
+            observer.disconnect()
+            document.removeEventListener('scroll-unlocked', onOrchestrationDone)
+        }
+
+        const onOrchestrationDone = () => {
+            orchestrationDone = true
+            tryReveal()
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    isIntersecting = true
+                    tryReveal()
+                }
+            },
+            { threshold: 0.2 },
+        )
+
+        observer.observe(section)
+        if (!orchestrationDone) document.addEventListener('scroll-unlocked', onOrchestrationDone)
+    }
+</script>

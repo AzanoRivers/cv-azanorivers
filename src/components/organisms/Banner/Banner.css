@@ -1,0 +1,425 @@
+/* Orden de la secuencia: BootIntro -> NavDock -> PhotoCard a los 2.75s -> sus
+   4 badges en cascada, terminan ~3.59s -> acá: el contenido de texto entra en
+   cascada, uno detrás de otro, en el orden en que se lee: nombre, luego
+   "Azano Rivers", luego la frase con líneas separadoras, luego la
+   descripción, luego la cita final en cursiva, luego los 3 bloques de cifras.
+   Después de esto (~4.95s) recién aparece LanguageSelector. Mobile: la foto
+   queda arriba (mismo orden que la animación); desde 2xl se acomoda a la
+   derecha con `row-reverse`. */
+.banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  max-width: 90rem;
+  margin: 0 auto;
+  /* En mobile la card sube bien arriba (poco padding-top): no importa si
+     queda casi debajo del selector de idioma, que es position:fixed y no
+     compite por espacio en el flujo normal. Poco padding-bottom también: en
+     mobile la siguiente sección (AboutSection) ya trae su propio padding-top,
+     sumados quedaba un hueco enorme entre los botones y "Sobre Mí". */
+  padding: 2.5rem 1.25rem 2rem;
+}
+
+.banner__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 32rem;
+  text-align: center;
+}
+
+.banner__name {
+  opacity: 0;
+  animation: banner-text-entrance 300ms ease-out 3600ms forwards;
+}
+
+.banner__handle {
+  /* Achica el hueco solo entre título y subtítulo (el gap del contenedor es
+     parejo para los 4 elementos; el line-height de .text-title/.text-subtitle
+     ya deja aire de sobra entre ellos dos específicamente). */
+  margin-top: -0.65rem;
+  opacity: 0;
+  animation: banner-text-entrance 300ms ease-out 3750ms forwards;
+}
+
+/* Sin cursiva: en vez de eso, unas líneas finas arriba y abajo la enmarcan
+   para darle presencia, como una franja de datos rápidos. En rosa (no en el
+   color de la grid): con el fondo cuadriculado, una línea del mismo tono que
+   la grid prácticamente desaparece. */
+.banner__tagline {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--darkpink);
+  border-bottom: 1px solid var(--darkpink);
+  font-weight: 600;
+  opacity: 0;
+  animation: banner-text-entrance 300ms ease-out 3900ms forwards;
+}
+
+.banner__tagline-highlight {
+  color: var(--green);
+}
+
+.banner__description {
+  margin-top: 0.5rem;
+  opacity: 0;
+  animation: banner-text-entrance 300ms ease-out 4050ms forwards;
+}
+
+.banner__quote {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--darkpink);
+  opacity: 0;
+  animation: banner-text-entrance 300ms ease-out 4200ms forwards;
+}
+
+.banner__quote::before {
+  content: '\201C';
+}
+
+.banner__quote::after {
+  content: '\201D';
+}
+
+.banner__stats {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.banner__stats .stat-block {
+  opacity: 0;
+  animation: banner-text-entrance 300ms ease-out forwards;
+}
+
+.banner__stats .stat-block:nth-child(1) {
+  animation-delay: 4350ms;
+}
+
+.banner__stats .stat-block:nth-child(2) {
+  animation-delay: 4450ms;
+}
+
+.banner__stats .stat-block:nth-child(3) {
+  animation-delay: 4550ms;
+}
+
+/* Cierra la cascada del banner: cada botón entra por separado, uno seguido
+   del otro de izquierda a derecha (mismo cadenciado de 100ms que los stats),
+   arrancando justo después del último stat. */
+.banner__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.banner__actions > * {
+  opacity: 0;
+  animation: banner-text-entrance 300ms ease-out forwards;
+}
+
+.banner__actions > *:nth-child(1) {
+  animation-delay: 4650ms;
+}
+
+.banner__actions > *:nth-child(2) {
+  animation-delay: 4750ms;
+}
+
+.banner__actions > *:nth-child(3) {
+  animation-delay: 4850ms;
+}
+
+/* Aparece cuando termina toda la cascada del banner (los botones terminan a
+   los 4850+300=5150ms; el <script> la muestra a los 5250ms) y desaparece en
+   cuanto el usuario hace scroll. Usa `transition` (no `animation ...
+   forwards`) para que la clase --hidden pueda apagarla sin pelear con el
+   valor final de una animación. Es un <button> (easter egg: clic/toque hace
+   que "explote", ver más abajo), no un ícono decorativo suelto. */
+/* Solo en mobile: al lado del nombre, arriba a la derecha del bloque de
+   contenido (que empieza justo con el <h1>). `position:absolute` a
+   propósito: así queda totalmente afuera del flujo y nunca puede correr el
+   título hacia la izquierda ni ocupar espacio propio, sin importar el ancho
+   real que termine teniendo el botón. Vuelve a su lugar de siempre (abajo de
+   los botones, en flujo normal) en desktop, ver media query 1200px. */
+.banner__scroll-hint {
+  position: absolute;
+  top: 0.75rem;
+  right: 1.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: help;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease-out;
+}
+
+.banner__scroll-hint--visible {
+  opacity: 1;
+  pointer-events: auto;
+  animation: banner-scroll-hint-bounce 1600ms ease-in-out 400ms infinite;
+}
+
+/* Ojo: opacity:0 sola no quita el clic, el botón sigue ahí. Sin esto se
+   podía seguir haciendo clic (y ver el cursor de "?") en la zona aunque la
+   flecha ya no se viera. */
+.banner__scroll-hint--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.banner__scroll-hint-icon {
+  width: 100%;
+  height: 100%;
+  color: var(--darkpink);
+}
+
+/* Rebote (baja/sube) + pulso (agranda y brilla) en un solo keyframe: dos
+   animations distintas no pueden pelear por la misma propiedad `transform`. */
+@keyframes banner-scroll-hint-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 0 color-mix(in srgb, var(--darkpink) 0%, transparent));
+  }
+  50% {
+    transform: translateY(0.5rem) scale(1.2);
+    filter: drop-shadow(0 0 0.5rem color-mix(in srgb, var(--darkpink) 70%, transparent));
+  }
+}
+
+/* Easter egg: al hacer clic/toque, "explota" (se detiene el rebote de arriba,
+   el ícono estalla, sale una onda expansiva y el texto BOOM aparece
+   estilo cómic), y recién cuando termina la más larga de las 3 animaciones
+   (900ms), el <script> hace un empujoncito de scroll que la hace desaparecer
+   de verdad. */
+.banner__scroll-hint--exploding {
+  animation: none;
+}
+
+.banner__scroll-hint--exploding .banner__scroll-hint-icon {
+  animation: banner-boom-icon 600ms ease-out forwards;
+}
+
+.banner__scroll-hint--exploding::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  animation: banner-boom-burst 500ms ease-out forwards;
+}
+
+.banner__scroll-hint-boom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  font-family: var(--font-encode);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: var(--darkpink);
+  -webkit-text-stroke: 2px var(--white-90);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.banner__scroll-hint--exploding .banner__scroll-hint-boom {
+  animation: banner-boom-text 900ms ease-out forwards;
+}
+
+@keyframes banner-boom-icon {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.4) rotate(-15deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.2) rotate(15deg);
+    opacity: 0;
+  }
+}
+
+@keyframes banner-boom-burst {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--darkpink) 60%, transparent);
+    opacity: 1;
+  }
+  100% {
+    box-shadow: 0 0 0 2.5rem color-mix(in srgb, var(--darkpink) 0%, transparent);
+    opacity: 0;
+  }
+}
+
+@keyframes banner-boom-text {
+  0%,
+  20% {
+    transform: translate(-50%, -50%) scale(0) rotate(-8deg);
+    opacity: 0;
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1.3) rotate(6deg);
+    opacity: 1;
+  }
+  55% {
+    transform: translate(-50%, -50%) scale(1) rotate(-4deg);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(-50%, -50%) scale(1.1) rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+.banner__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-family: var(--font-plex);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+
+.banner__cta--primary {
+  border: 1px solid var(--darkpink);
+  background-color: color-mix(in srgb, var(--darkpink) 15%, transparent);
+  color: var(--white-90);
+}
+
+.banner__cta--primary:hover,
+.banner__cta--primary:focus-visible {
+  background-color: color-mix(in srgb, var(--darkpink) 30%, transparent);
+  outline: none;
+}
+
+.banner__cta--secondary {
+  border: 1px solid color-mix(in srgb, var(--lightblue) 50%, transparent);
+  color: var(--white-90);
+}
+
+.banner__cta--secondary:hover,
+.banner__cta--secondary:focus-visible {
+  border-color: var(--lightblue);
+  color: var(--lightblue);
+  outline: none;
+}
+
+.banner__cta-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* Este no es un botón: solo texto con ícono, sin borde ni fondo. */
+.banner__download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--white-70);
+  font-family: var(--font-plex);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.banner__download:hover,
+.banner__download:focus-visible {
+  color: var(--lightblue);
+  outline: none;
+}
+
+@keyframes banner-text-entrance {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 1200px) {
+  .banner {
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    gap: 4rem;
+    padding: 8rem 3rem 4rem;
+  }
+
+  .banner__content {
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .banner__stats {
+    justify-content: flex-start;
+  }
+
+  .banner__actions {
+    justify-content: flex-start;
+  }
+
+  /* Desktop: vuelve al flujo normal, debajo de los botones (como antes de
+     la excepción mobile de arriba). */
+  .banner__scroll-hint {
+    position: relative;
+    top: auto;
+    right: auto;
+    align-self: center;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner__name,
+  .banner__handle,
+  .banner__tagline,
+  .banner__description,
+  .banner__quote,
+  .banner__stats .stat-block,
+  .banner__actions > * {
+    animation: none;
+    opacity: 1;
+  }
+
+  .banner__scroll-hint {
+    transition: none;
+  }
+
+  .banner__scroll-hint--visible {
+    animation: none;
+  }
+
+  .banner__scroll-hint-icon,
+  .banner__scroll-hint-boom,
+  .banner__scroll-hint--exploding::before {
+    animation: none;
+  }
+
+  .banner__scroll-hint--exploding .banner__scroll-hint-icon {
+    opacity: 0;
+  }
+}

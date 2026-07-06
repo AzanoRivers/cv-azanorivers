@@ -1,0 +1,12 @@
+---
+import '@/components/atoms/Badge/Badge.css'
+
+interface Props {
+    label: string
+    i18nKey?: string
+}
+
+const { label, i18nKey } = Astro.props
+---
+
+<span class="badge" data-i18n={i18nKey}>{label}</span>

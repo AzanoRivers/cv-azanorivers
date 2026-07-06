@@ -1,0 +1,62 @@
+---
+import '@/components/organisms/NavDock/NavDock.css'
+import type { Translations } from '@/i18n'
+import { Home, User, Code2, Briefcase, Award, GraduationCap, Mail } from 'lucide-react'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+
+const items = [
+    { href: '#banner', label: t.nav.banner, Icon: Home, isHome: true, key: 'nav.banner' },
+    { href: '#sobre-mi', label: t.nav.sobreMi, Icon: User, isHome: false, key: 'nav.sobreMi' },
+    { href: '#competencias', label: t.nav.competencias, Icon: Code2, isHome: false, key: 'nav.competencias' },
+    { href: '#experiencia', label: t.nav.experiencia, Icon: Briefcase, isHome: false, key: 'nav.experiencia' },
+    { href: '#certificaciones', label: t.nav.certificaciones, Icon: Award, isHome: false, key: 'nav.certificaciones' },
+    { href: '#educacion', label: t.nav.educacion, Icon: GraduationCap, isHome: false, key: 'nav.educacion' },
+    { href: '#contacto', label: t.nav.contacto, Icon: Mail, isHome: false, key: 'nav.contacto' },
+]
+---
+
+<nav class="nav-dock" aria-label={t.nav.ariaLabel} data-i18n-aria="nav.ariaLabel">
+    {items.map(({ href, label, Icon, isHome, key }) => (
+        <a
+            class:list={['nav-dock__item', isHome && 'nav-dock__item--active']}
+            href={href}
+            aria-label={label}
+            data-i18n-aria={key}
+        >
+            <Icon className="nav-dock__icon" strokeWidth={1.5} aria-hidden="true" />
+            <span class="nav-dock__dot" aria-hidden="true"></span>
+            <span class="nav-dock__tooltip" role="tooltip" aria-hidden="true" data-i18n={key}>{label}</span>
+        </a>
+    ))}
+</nav>
+
+<script>
+    const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.nav-dock__item'))
+
+    const sections = navLinks
+        .map((link) => document.querySelector(link.getAttribute('href') ?? ''))
+        .filter((section): section is Element => section !== null)
+
+    const setActive = (id: string) => {
+        navLinks.forEach((link) => {
+            link.classList.toggle('nav-dock__item--active', link.getAttribute('href') === `#${id}`)
+        })
+    }
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+            const visible = entries.filter((entry) => entry.isIntersecting)
+            if (visible.length === 0) return
+            const mostVisible = visible.reduce((a, b) => (a.intersectionRatio > b.intersectionRatio ? a : b))
+            setActive(mostVisible.target.id)
+        },
+        { rootMargin: '-45% 0px -45% 0px', threshold: 0 },
+    )
+
+    sections.forEach((section) => observer.observe(section))
+</script>

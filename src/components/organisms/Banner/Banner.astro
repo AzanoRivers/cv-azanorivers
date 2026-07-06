@@ -1,0 +1,112 @@
+---
+import '@/components/organisms/Banner/Banner.css'
+import { PhotoCard, StatBlock } from '@/components/molecules'
+import type { Translations } from '@/i18n'
+import { ArrowDown, Mail, Download, ChevronDown } from 'lucide-react'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+---
+
+<section id="banner" class="banner">
+    <PhotoCard t={t} />
+    <div class="banner__content">
+        <h1 class="banner__name text-title" data-i18n="banner.name">{t.banner.name}</h1>
+        <p class="banner__handle text-subtitle" data-i18n="banner.handle">{t.banner.handle}</p>
+        <p class="banner__tagline text-body">
+            <span data-i18n="banner.taglinePrefix">{t.banner.taglinePrefix}</span><span
+                class="banner__tagline-highlight"
+                data-i18n="banner.taglineHighlight">{t.banner.taglineHighlight}</span><span
+                data-i18n="banner.taglineSuffix">{t.banner.taglineSuffix}</span>
+        </p>
+        <p class="banner__description text-body" data-i18n="banner.description">{t.banner.description}</p>
+        <p class="banner__quote text-emphasis" data-i18n="banner.quote">{t.banner.quote}</p>
+        <div class="banner__stats">
+            <StatBlock
+                value=""
+                label={t.banner.stats.yearsLabel}
+                labelI18nKey="banner.stats.yearsLabel"
+                counterTarget={10}
+                counterPrefix="+"
+            />
+            <StatBlock
+                value={t.banner.stats.educationValue}
+                valueI18nKey="banner.stats.educationValue"
+                label={t.banner.stats.educationLabel}
+                labelI18nKey="banner.stats.educationLabel"
+            />
+            <StatBlock
+                value=""
+                label={t.banner.stats.certificationsLabel}
+                labelI18nKey="banner.stats.certificationsLabel"
+                counterTarget={90}
+                counterPrefix="+"
+            />
+        </div>
+        <div class="banner__actions">
+            <a class="banner__cta banner__cta--primary" href="#experiencia">
+                <span data-i18n="banner.actions.experience">{t.banner.actions.experience}</span>
+                <ArrowDown className="banner__cta-icon" strokeWidth={1.5} aria-hidden="true" />
+            </a>
+            <a class="banner__cta banner__cta--secondary" href="#contacto">
+                <span data-i18n="banner.actions.contact">{t.banner.actions.contact}</span>
+                <Mail className="banner__cta-icon" strokeWidth={1.5} aria-hidden="true" />
+            </a>
+            <a class="banner__download" href="/cv-andres-rivera.pdf" download>
+                <Download className="banner__cta-icon" strokeWidth={1.5} aria-hidden="true" />
+                <span data-i18n="banner.actions.downloadCv">{t.banner.actions.downloadCv}</span>
+            </a>
+        </div>
+        <button
+            type="button"
+            class="banner__scroll-hint"
+            aria-label={t.banner.scrollHintLabel}
+            data-i18n-aria="banner.scrollHintLabel">
+            <ChevronDown className="banner__scroll-hint-icon" strokeWidth={1.5} aria-hidden="true" />
+            <span class="banner__scroll-hint-boom" aria-hidden="true">BOOM!</span>
+        </button>
+    </div>
+</section>
+
+<script>
+    const scrollHint = document.querySelector('.banner__scroll-hint')
+
+    if (scrollHint) {
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+        // Aparece por `transition` (con clase), no por `animation ... forwards`:
+        // una animación con forwards deja su valor final por encima de
+        // cualquier regla normal de CSS, así que la clase --hidden de abajo
+        // nunca lograría apagarla (mismo bug que ya salió en ExperienceSection).
+        setTimeout(
+            () => scrollHint.classList.add('banner__scroll-hint--visible'),
+            reducedMotion ? 0 : 5250,
+        )
+
+        const hideOnScroll = () => {
+            if (window.scrollY > 24) {
+                scrollHint.classList.add('banner__scroll-hint--hidden')
+                window.removeEventListener('scroll', hideOnScroll)
+            }
+        }
+
+        window.addEventListener('scroll', hideOnScroll, { passive: true })
+
+        // Easter egg: clic/toque hace "explotar" el ícono (900ms, la más
+        // larga de las 3 animaciones combinadas: burst 500ms, ícono 600ms,
+        // texto BOOM 900ms) y recién ahí un empujoncito de scroll, que es lo
+        // que la hace desaparecer de verdad (mismo `hideOnScroll` de arriba).
+        scrollHint.addEventListener('click', () => {
+            if (scrollHint.classList.contains('banner__scroll-hint--exploding')) return
+            scrollHint.classList.add('banner__scroll-hint--exploding')
+
+            setTimeout(
+                () => window.scrollBy({ top: 150, behavior: reducedMotion ? 'auto' : 'smooth' }),
+                reducedMotion ? 0 : 900,
+            )
+        })
+    }
+</script>

@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets'
+import '@/components/molecules/PhotoCard/PhotoCard.css'
+import { Badge } from '@/components/atoms'
+import azanoElementsImage, { HERO_IMAGE_SIZE } from '@/assets/images/heroImage'
+import type { Translations } from '@/i18n'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+---
+
+<figure class="photo-card">
+    <Image
+        class="photo-card__image"
+        src={azanoElementsImage}
+        alt={t.banner.photoAlt}
+        data-i18n-alt="banner.photoAlt"
+        width={HERO_IMAGE_SIZE}
+        height={HERO_IMAGE_SIZE}
+        loading="eager"
+        fetchpriority="high"
+    />
+    <div class="photo-card__badges">
+        <Badge label={t.banner.badges.fullstack} i18nKey="banner.badges.fullstack" />
+        <Badge label={t.banner.badges.uiux} i18nKey="banner.badges.uiux" />
+        <Badge label={t.banner.badges.blockchain} i18nKey="banner.badges.blockchain" />
+        <Badge label={t.banner.badges.iot} i18nKey="banner.badges.iot" />
+        <span class="photo-card__badge-mobile-only">
+            <Badge label={t.banner.badges.gaming} i18nKey="banner.badges.gaming" />
+        </span>
+    </div>
+</figure>

@@ -1,0 +1,94 @@
+.tech-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--az-grid-line);
+  border-radius: 0.5rem;
+  background-color: color-mix(in srgb, var(--background) 60%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  /* Mismo efecto de profundidad que PhotoCard: anillo rosa fino + sombra
+     suave debajo, solo que a escala de mini card. */
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--darkpink) 15%, transparent),
+    0 1rem 2rem -1.25rem rgba(0, 0, 0, 0.6);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.tech-card:hover {
+  border-color: var(--darkpink);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--darkpink) 35%, transparent),
+    0 1rem 2rem -1.25rem rgba(0, 0, 0, 0.6);
+}
+
+/* IoT: en reposo se ve igual que las demás cards. Solo el ícono (la hojita)
+   es verde siempre; el borde pasa a verde (en vez de rosa) solo en hover. En
+   dispositivos sin hover (mobile/touch) no hay forma de "pasar el mouse", así
+   que ahí se deja el borde verde de una vez. */
+.tech-card--accent-green:hover {
+  border-color: var(--green);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--green) 35%, transparent),
+    0 1rem 2rem -1.25rem rgba(0, 0, 0, 0.6);
+}
+
+@media (hover: none) {
+  .tech-card--accent-green {
+    border-color: color-mix(in srgb, var(--green) 55%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--green) 20%, transparent),
+      0 1rem 2rem -1.25rem rgba(0, 0, 0, 0.6);
+  }
+}
+
+.tech-card--accent-green .tech-card__icon {
+  color: var(--green);
+}
+
+.tech-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--lightblue);
+}
+
+.tech-card__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.tech-card__title {
+  font-family: var(--font-encode);
+  font-weight: 600;
+  color: var(--white-90);
+  font-size: 0.875rem;
+  line-height: 1.3;
+}
+
+.tech-card__description {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 440px) {
+  .tech-card {
+    padding: 1.25rem;
+  }
+
+  .tech-card__icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .tech-card__title {
+    font-size: 1rem;
+  }
+
+  .tech-card__description {
+    font-size: 0.8125rem;
+  }
+}

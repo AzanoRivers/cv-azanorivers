@@ -1,0 +1,73 @@
+.experience-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--az-grid-line);
+  background-color: color-mix(in srgb, var(--background) 70%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--darkpink) 15%, transparent),
+    0 1rem 2rem -1.25rem rgba(0, 0, 0, 0.6);
+}
+
+.experience-card__dates {
+  font-family: var(--font-plex);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  color: var(--lightblue);
+}
+
+.experience-card__company {
+  font-family: var(--font-encode);
+  font-weight: 700;
+  color: var(--white-90);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.experience-card__role {
+  font-family: var(--font-encode);
+  font-weight: 500;
+  color: var(--white-70);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+.experience-card__responsibilities {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+  padding-left: 1rem;
+  font-size: 0.75rem;
+}
+
+.experience-card__responsibilities li {
+  list-style: disc;
+}
+
+.experience-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+@media (min-width: 440px) {
+  .experience-card__company {
+    font-size: 1.125rem;
+  }
+
+  .experience-card__role {
+    font-size: 0.875rem;
+  }
+
+  .experience-card__responsibilities {
+    font-size: 0.8125rem;
+  }
+}

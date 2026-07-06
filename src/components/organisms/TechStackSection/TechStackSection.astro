@@ -1,0 +1,224 @@
+---
+import '@/components/organisms/TechStackSection/TechStackSection.css'
+import type { Translations } from '@/i18n'
+import { Gamepad2, RadioTower, Database, Cloud, Coffee, Code2 } from 'lucide-react'
+import {
+    SiJavascript,
+    SiReact,
+    SiAstro,
+    SiVuedotjs,
+    SiPython,
+    SiDjango,
+    SiTailwindcss,
+    SiCss,
+    SiFigma,
+    SiNodedotjs,
+    SiExpress,
+    SiNextdotjs,
+    SiNestjs,
+    SiDocker,
+    SiFlask,
+    SiFastapi,
+    SiPostgresql,
+    SiMongodb,
+    SiRedis,
+    SiMysql,
+    SiSqlite,
+    SiTurso,
+    SiVercel,
+    SiCloudflare,
+    SiExpo,
+    SiGodotengine,
+    SiCplusplus,
+    SiMicropython,
+    SiArduino,
+    SiPhp,
+    SiWordpress,
+    SiRuby,
+} from 'react-icons/si'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+
+// Nombres de tecnología son iguales en cualquier idioma (marcas propias), así
+// que no pasan por i18n/data-i18n: solo título/subtítulo/captions de cada
+// grupo sí cambian de texto entre ES/EN.
+const groups = [
+    {
+        key: 'frontend',
+        accent: 'cyan',
+        title: t.techStack.groups.frontend.title,
+        titleI18nKey: 'techStack.groups.frontend.title',
+        caption: t.techStack.groups.frontend.caption,
+        captionI18nKey: 'techStack.groups.frontend.caption',
+        items: [
+            { name: 'JavaScript', Icon: SiJavascript },
+            { name: 'React', Icon: SiReact },
+            { name: 'Astro', Icon: SiAstro },
+            { name: 'Vue', Icon: SiVuedotjs },
+            { name: 'Python', Icon: SiPython },
+            { name: 'Django', Icon: SiDjango },
+            { name: 'Tailwind CSS', Icon: SiTailwindcss },
+            { name: 'CSS Vanilla', Icon: SiCss },
+            { name: 'Figma', Icon: SiFigma },
+            { name: 'Vercel', Icon: SiVercel },
+            { name: 'Cloudflare', Icon: SiCloudflare },
+            { name: 'Oracle', Icon: Database },
+        ],
+    },
+    {
+        key: 'backend',
+        accent: 'pink',
+        title: t.techStack.groups.backend.title,
+        titleI18nKey: 'techStack.groups.backend.title',
+        caption: t.techStack.groups.backend.caption,
+        captionI18nKey: 'techStack.groups.backend.caption',
+        items: [
+            { name: 'Node.js', Icon: SiNodedotjs },
+            { name: 'Express', Icon: SiExpress },
+            { name: 'Next.js', Icon: SiNextdotjs },
+            { name: 'Nest.js', Icon: SiNestjs },
+            { name: 'Docker', Icon: SiDocker },
+            { name: 'Python', Icon: SiPython },
+            { name: 'Flask', Icon: SiFlask },
+            { name: 'FastAPI', Icon: SiFastapi },
+            { name: 'Oracle', Icon: Database },
+            { name: 'Vercel', Icon: SiVercel },
+            { name: 'AWS', Icon: Cloud },
+        ],
+    },
+    {
+        key: 'db',
+        accent: 'cyan',
+        title: t.techStack.groups.db.title,
+        titleI18nKey: 'techStack.groups.db.title',
+        caption: t.techStack.groups.db.caption,
+        captionI18nKey: 'techStack.groups.db.caption',
+        items: [
+            { name: 'PostgreSQL', Icon: SiPostgresql },
+            { name: 'MongoDB', Icon: SiMongodb },
+            { name: 'Redis', Icon: SiRedis },
+            { name: 'MySQL', Icon: SiMysql },
+            { name: 'SQLite', Icon: SiSqlite },
+            { name: 'Turso', Icon: SiTurso },
+        ],
+    },
+    {
+        key: 'mobile',
+        accent: 'pink',
+        title: t.techStack.groups.mobile.title,
+        titleI18nKey: 'techStack.groups.mobile.title',
+        caption: t.techStack.groups.mobile.caption,
+        captionI18nKey: 'techStack.groups.mobile.caption',
+        items: [
+            { name: 'React Native', Icon: SiReact },
+            { name: 'Expo', Icon: SiExpo },
+        ],
+    },
+    {
+        key: 'gaming',
+        accent: 'cyan',
+        title: t.techStack.groups.gaming.title,
+        titleI18nKey: 'techStack.groups.gaming.title',
+        caption: t.techStack.groups.gaming.caption,
+        captionI18nKey: 'techStack.groups.gaming.caption',
+        items: [
+            { name: 'Godot Engine', Icon: SiGodotengine },
+            { name: 'Phaser.js', Icon: Gamepad2 },
+        ],
+    },
+    {
+        key: 'iot',
+        accent: 'green',
+        title: t.techStack.groups.iot.title,
+        titleI18nKey: 'techStack.groups.iot.title',
+        caption: t.techStack.groups.iot.caption,
+        captionI18nKey: 'techStack.groups.iot.caption',
+        items: [
+            { name: 'C / C++', Icon: SiCplusplus },
+            { name: 'MicroPython', Icon: SiMicropython },
+            { name: 'Arduino', Icon: SiArduino },
+            { name: 'LoRa', Icon: RadioTower },
+        ],
+    },
+]
+
+const avoidedTech = [
+    { name: 'PHP', Icon: SiPhp },
+    { name: 'WordPress', Icon: SiWordpress },
+    { name: 'Ruby', Icon: SiRuby },
+    { name: 'Java', Icon: Coffee },
+]
+---
+
+<section id="competencias" class="tech-stack">
+    <div class="tech-stack__header">
+        <Code2 className="tech-stack__header-icon" strokeWidth={1.5} aria-hidden="true" />
+        <h2 class="tech-stack__title text-title" data-i18n="techStack.title">{t.techStack.title}</h2>
+        <p class="tech-stack__subtitle text-subtitle" data-i18n="techStack.subtitle">{t.techStack.subtitle}</p>
+    </div>
+    <div class="tech-stack__groups">
+        {groups.map((group) => (
+            <div class:list={['tech-stack__group', `tech-stack__group--${group.accent}`]}>
+                <h3 class="tech-stack__group-title" data-i18n={group.titleI18nKey}>{group.title}</h3>
+                <p class="tech-stack__group-caption text-muted" data-i18n={group.captionI18nKey}>{group.caption}</p>
+                <div class="tech-stack__grid">
+                    {group.items.map(({ name, Icon }) => (
+                        <div class="tech-stack__card">
+                            <Icon className="tech-stack__card-icon" aria-hidden="true" />
+                            <span class="tech-stack__card-name">{name}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        ))}
+    </div>
+    <div class="tech-stack__avoid">
+        <p class="tech-stack__avoid-label text-muted" data-i18n="techStack.avoidLabel">{t.techStack.avoidLabel}</p>
+        <div class="tech-stack__avoid-icons">
+            {avoidedTech.map(({ name, Icon }) => (
+                <div class="tech-stack__avoid-item">
+                    <Icon className="tech-stack__avoid-icon" aria-hidden="true" />
+                    <span class="tech-stack__avoid-name">{name}</span>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>
+
+<script>
+    const section = document.querySelector('.tech-stack')
+
+    if (section) {
+        let isIntersecting = false
+        let orchestrationDone = !document.documentElement.classList.contains('is-loading')
+
+        const tryReveal = () => {
+            if (!isIntersecting || !orchestrationDone) return
+            section.classList.add('tech-stack--visible')
+            observer.disconnect()
+            document.removeEventListener('scroll-unlocked', onOrchestrationDone)
+        }
+
+        const onOrchestrationDone = () => {
+            orchestrationDone = true
+            tryReveal()
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    isIntersecting = true
+                    tryReveal()
+                }
+            },
+            { threshold: 0.1 },
+        )
+
+        observer.observe(section)
+        if (!orchestrationDone) document.addEventListener('scroll-unlocked', onOrchestrationDone)
+    }
+</script>

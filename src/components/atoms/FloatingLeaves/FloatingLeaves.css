@@ -1,0 +1,492 @@
+.floating-leaves {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Capa 1: caída vertical, individual por hoja (translate y, opacity). Sin
+   componente horizontal propio: el desplazamiento a los lados y la inclinación
+   del cuerpo salen ÚNICAMENTE de la Capa 2 (viento compartido), para que el
+   viento se sienta como una sola fuerza global y no como cada hoja arrastrando
+   su propio recorrido lateral por separado. Lo individual de cada hoja queda en
+   su velocidad de caída (--duration), su momento de aparición (--delay), su
+   tamaño, cuánto le pega el viento (--wind-sensitivity, ver Capa 2) y su aleteo
+   local (Capa 3): mismo viento para todas, pero ninguna se mueve exactamente igual. */
+.floating-leaves__leaf {
+  position: absolute;
+  top: 0;
+  left: calc(var(--x, 0) * 1%);
+  opacity: 0;
+  animation-name: leaf-fall, wind-gust;
+  animation-duration: var(--duration, 26s), 46s;
+  animation-timing-function: linear, linear;
+  animation-iteration-count: infinite, infinite;
+  animation-delay: var(--delay, 0s), 0s;
+  animation-fill-mode: backwards, none;
+  will-change: translate, rotate, transform, opacity;
+}
+
+/* Las 14 hojas son idénticas en HTML (mismo markup, sin atributos por instancia):
+   lo que las distingue es puramente CSS, una regla por posición vía :nth-child.
+   Los valores salen de la misma fórmula determinística de siempre, calculada una
+   sola vez y pegada acá como reglas normales, no generada en el HTML en cada build. */
+.floating-leaves__leaf:nth-child(1) {
+  --x: 73.33;
+  --duration: 22s;
+  --delay: 0s;
+  --size: 0.6;
+  --leaf-opacity: 0.14;
+  --wind-sensitivity: 0.65;
+}
+.floating-leaves__leaf:nth-child(1) .floating-leaves__leaf-flutter {
+  --flutter-duration: 9s;
+  --flutter-delay: 0s;
+  --flutter-radius: 0.35rem;
+}
+.floating-leaves__leaf:nth-child(2) {
+  --x: 71;
+  --duration: 27s;
+  --delay: 4s;
+  --size: 1.3;
+  --leaf-opacity: 0.17;
+  --wind-sensitivity: 1.2;
+}
+.floating-leaves__leaf:nth-child(2) .floating-leaves__leaf-flutter {
+  --flutter-duration: 12s;
+  --flutter-delay: 7s;
+  --flutter-radius: 1.05rem;
+}
+.floating-leaves__leaf:nth-child(3) {
+  --x: 81;
+  --duration: 32s;
+  --delay: 8s;
+  --size: 1;
+  --leaf-opacity: 0.2;
+  --wind-sensitivity: 1.15;
+}
+.floating-leaves__leaf:nth-child(3) .floating-leaves__leaf-flutter {
+  --flutter-duration: 15s;
+  --flutter-delay: 8s;
+  --flutter-radius: 0.85rem;
+}
+.floating-leaves__leaf:nth-child(4) {
+  --x: 36.67;
+  --duration: 37s;
+  --delay: 12s;
+  --size: 0.7;
+  --leaf-opacity: 0.15;
+  --wind-sensitivity: 1.1;
+}
+.floating-leaves__leaf:nth-child(4) .floating-leaves__leaf-flutter {
+  --flutter-duration: 18s;
+  --flutter-delay: 3s;
+  --flutter-radius: 0.65rem;
+}
+.floating-leaves__leaf:nth-child(5) {
+  --x: 54.67;
+  --duration: 26s;
+  --delay: 16s;
+  --size: 1.4;
+  --leaf-opacity: 0.18;
+  --wind-sensitivity: 1.05;
+}
+.floating-leaves__leaf:nth-child(5) .floating-leaves__leaf-flutter {
+  --flutter-duration: 11s;
+  --flutter-delay: 10s;
+  --flutter-radius: 0.45rem;
+}
+.floating-leaves__leaf:nth-child(6) {
+  --x: 85;
+  --duration: 31s;
+  --delay: 15s;
+  --size: 1.1;
+  --leaf-opacity: 0.21;
+  --wind-sensitivity: 1;
+}
+.floating-leaves__leaf:nth-child(6) .floating-leaves__leaf-flutter {
+  --flutter-duration: 14s;
+  --flutter-delay: 11s;
+  --flutter-radius: 1.15rem;
+}
+.floating-leaves__leaf:nth-child(7) {
+  --x: 22;
+  --duration: 36s;
+  --delay: 19s;
+  --size: 0.8;
+  --leaf-opacity: 0.16;
+  --wind-sensitivity: 0.95;
+}
+.floating-leaves__leaf:nth-child(7) .floating-leaves__leaf-flutter {
+  --flutter-duration: 17s;
+  --flutter-delay: 12s;
+  --flutter-radius: 0.95rem;
+}
+.floating-leaves__leaf:nth-child(8) {
+  --x: 59;
+  --duration: 25s;
+  --delay: 23s;
+  --size: 1.5;
+  --leaf-opacity: 0.19;
+  --wind-sensitivity: 0.9;
+}
+.floating-leaves__leaf:nth-child(8) .floating-leaves__leaf-flutter {
+  --flutter-duration: 10s;
+  --flutter-delay: 3s;
+  --flutter-radius: 0.75rem;
+}
+.floating-leaves__leaf:nth-child(9) {
+  --x: 96;
+  --duration: 30s;
+  --delay: 27s;
+  --size: 1.2;
+  --leaf-opacity: 0.14;
+  --wind-sensitivity: 0.85;
+}
+.floating-leaves__leaf:nth-child(9) .floating-leaves__leaf-flutter {
+  --flutter-duration: 13s;
+  --flutter-delay: 9s;
+  --flutter-radius: 0.55rem;
+}
+.floating-leaves__leaf:nth-child(10) {
+  --x: 33;
+  --duration: 35s;
+  --delay: 31s;
+  --size: 0.9;
+  --leaf-opacity: 0.17;
+  --wind-sensitivity: 0.8;
+}
+.floating-leaves__leaf:nth-child(10) .floating-leaves__leaf-flutter {
+  --flutter-duration: 16s;
+  --flutter-delay: 11s;
+  --flutter-radius: 0.35rem;
+}
+.floating-leaves__leaf:nth-child(11) {
+  --x: 70;
+  --duration: 24s;
+  --delay: 30s;
+  --size: 0.6;
+  --leaf-opacity: 0.2;
+  --wind-sensitivity: 0.75;
+}
+.floating-leaves__leaf:nth-child(11) .floating-leaves__leaf-flutter {
+  --flutter-duration: 9s;
+  --flutter-delay: 1s;
+  --flutter-radius: 1.05rem;
+}
+.floating-leaves__leaf:nth-child(12) {
+  --x: 7;
+  --duration: 29s;
+  --delay: 34s;
+  --size: 1.3;
+  --leaf-opacity: 0.15;
+  --wind-sensitivity: 0.7;
+}
+.floating-leaves__leaf:nth-child(12) .floating-leaves__leaf-flutter {
+  --flutter-duration: 12s;
+  --flutter-delay: 5s;
+  --flutter-radius: 0.85rem;
+}
+.floating-leaves__leaf:nth-child(13) {
+  --x: 44;
+  --duration: 34s;
+  --delay: 38s;
+  --size: 1;
+  --leaf-opacity: 0.18;
+  --wind-sensitivity: 0.65;
+}
+.floating-leaves__leaf:nth-child(13) .floating-leaves__leaf-flutter {
+  --flutter-duration: 15s;
+  --flutter-delay: 3s;
+  --flutter-radius: 0.65rem;
+}
+.floating-leaves__leaf:nth-child(14) {
+  --x: 81;
+  --duration: 23s;
+  --delay: 42s;
+  --size: 0.7;
+  --leaf-opacity: 0.21;
+  --wind-sensitivity: 1.2;
+}
+.floating-leaves__leaf:nth-child(14) .floating-leaves__leaf-flutter {
+  --flutter-duration: 18s;
+  --flutter-delay: 13s;
+  --flutter-radius: 0.45rem;
+}
+
+@keyframes leaf-fall {
+  0% {
+    translate: 0 -10vh;
+    opacity: 0;
+  }
+  6% {
+    opacity: var(--leaf-opacity, 0.16);
+  }
+  94% {
+    opacity: var(--leaf-opacity, 0.16);
+  }
+  100% {
+    translate: 0 112vh;
+    opacity: 0;
+  }
+}
+
+/* Capa 2: viento AMBIENTAL, una sola animación fija (sin variar por hoja) aplicada
+   por igual a todas: por eso todas las hojas en pantalla se mueven juntas, en la
+   MISMA dirección y en el MISMO instante (no cada una arrastrando su propio
+   recorrido lateral). Pero no es igual de intensa para todas: cada valor está
+   multiplicado por `--wind-sensitivity` (distinta por hoja, como si algunas
+   pesaran menos que otras), así que la dirección y el momento son compartidos,
+   pero cuánto se mueve y cuánto se inclina cada una no es idéntico.
+   `transform` para el desplazamiento x/y (independiente de `translate`, que en la
+   Capa 1 ya controla la caída) y `rotate` para la inclinación del cuerpo, calculada
+   a partir del MISMO valor de viento (rotate = x_viento / 23 * 30deg), así que el
+   cuerpo se recuesta exactamente hacia donde sopla en cada instante.
+   Los valores base son una onda seno pura, value(t) = 23vw * sin(2*pi*t), muestreada
+   cada 5%: una función seno es infinitamente derivable (nunca tiene un quiebre de
+   velocidad NI de aceleración en ningún punto). La velocidad es máxima al cruzar
+   por el centro (ahí "cambia de dirección" el viento) y mínima en los picos, igual
+   que un péndulo real: nunca queda fija, nunca frena de golpe, nunca acelera de golpe.
+   En cada pico (25% y 75%, uno hacia la derecha y otro hacia la izquierda) se suma
+   un envión hacia arriba (-11vh en la base, también escalado por sensibilidad),
+   moderado para que nunca gane con fuerza contra la caída propia de la hoja y se
+   sienta como un planeo, no como un salto. Ese envión es también un coseno
+   elevado, así que entra y sale con velocidad cero, igual de suave que el resto. */
+@keyframes wind-gust {
+  0% {
+    transform: translate(0, 0);
+    rotate: 0deg;
+  }
+  5% {
+    transform: translate(calc(7.1vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(9deg * var(--wind-sensitivity, 1));
+  }
+  10% {
+    transform: translate(calc(13.5vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(18deg * var(--wind-sensitivity, 1));
+  }
+  15% {
+    transform: translate(calc(18.6vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(24deg * var(--wind-sensitivity, 1));
+  }
+  17% {
+    transform: translate(calc(20.1vw * var(--wind-sensitivity, 1)), calc(-1vh * var(--wind-sensitivity, 1)));
+    rotate: calc(26deg * var(--wind-sensitivity, 1));
+  }
+  19% {
+    transform: translate(calc(21.4vw * var(--wind-sensitivity, 1)), calc(-3.8vh * var(--wind-sensitivity, 1)));
+    rotate: calc(28deg * var(--wind-sensitivity, 1));
+  }
+  21% {
+    transform: translate(calc(22.3vw * var(--wind-sensitivity, 1)), calc(-7.2vh * var(--wind-sensitivity, 1)));
+    rotate: calc(29deg * var(--wind-sensitivity, 1));
+  }
+  23% {
+    transform: translate(calc(22.8vw * var(--wind-sensitivity, 1)), calc(-9.9vh * var(--wind-sensitivity, 1)));
+    rotate: calc(30deg * var(--wind-sensitivity, 1));
+  }
+  25% {
+    transform: translate(calc(23vw * var(--wind-sensitivity, 1)), calc(-11vh * var(--wind-sensitivity, 1)));
+    rotate: calc(30deg * var(--wind-sensitivity, 1));
+  }
+  27% {
+    transform: translate(calc(22.8vw * var(--wind-sensitivity, 1)), calc(-9.9vh * var(--wind-sensitivity, 1)));
+    rotate: calc(30deg * var(--wind-sensitivity, 1));
+  }
+  29% {
+    transform: translate(calc(22.3vw * var(--wind-sensitivity, 1)), calc(-7.2vh * var(--wind-sensitivity, 1)));
+    rotate: calc(29deg * var(--wind-sensitivity, 1));
+  }
+  31% {
+    transform: translate(calc(21.4vw * var(--wind-sensitivity, 1)), calc(-3.8vh * var(--wind-sensitivity, 1)));
+    rotate: calc(28deg * var(--wind-sensitivity, 1));
+  }
+  33% {
+    transform: translate(calc(20.1vw * var(--wind-sensitivity, 1)), calc(-1vh * var(--wind-sensitivity, 1)));
+    rotate: calc(26deg * var(--wind-sensitivity, 1));
+  }
+  35% {
+    transform: translate(calc(18.6vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(24deg * var(--wind-sensitivity, 1));
+  }
+  40% {
+    transform: translate(calc(13.5vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(18deg * var(--wind-sensitivity, 1));
+  }
+  45% {
+    transform: translate(calc(7.1vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(9deg * var(--wind-sensitivity, 1));
+  }
+  50% {
+    transform: translate(0, 0);
+    rotate: 0deg;
+  }
+  55% {
+    transform: translate(calc(-7.1vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(-9deg * var(--wind-sensitivity, 1));
+  }
+  60% {
+    transform: translate(calc(-13.5vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(-18deg * var(--wind-sensitivity, 1));
+  }
+  65% {
+    transform: translate(calc(-18.6vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(-24deg * var(--wind-sensitivity, 1));
+  }
+  67% {
+    transform: translate(calc(-20.1vw * var(--wind-sensitivity, 1)), calc(-1vh * var(--wind-sensitivity, 1)));
+    rotate: calc(-26deg * var(--wind-sensitivity, 1));
+  }
+  69% {
+    transform: translate(calc(-21.4vw * var(--wind-sensitivity, 1)), calc(-3.8vh * var(--wind-sensitivity, 1)));
+    rotate: calc(-28deg * var(--wind-sensitivity, 1));
+  }
+  71% {
+    transform: translate(calc(-22.3vw * var(--wind-sensitivity, 1)), calc(-7.2vh * var(--wind-sensitivity, 1)));
+    rotate: calc(-29deg * var(--wind-sensitivity, 1));
+  }
+  73% {
+    transform: translate(calc(-22.8vw * var(--wind-sensitivity, 1)), calc(-9.9vh * var(--wind-sensitivity, 1)));
+    rotate: calc(-30deg * var(--wind-sensitivity, 1));
+  }
+  75% {
+    transform: translate(calc(-23vw * var(--wind-sensitivity, 1)), calc(-11vh * var(--wind-sensitivity, 1)));
+    rotate: calc(-30deg * var(--wind-sensitivity, 1));
+  }
+  77% {
+    transform: translate(calc(-22.8vw * var(--wind-sensitivity, 1)), calc(-9.9vh * var(--wind-sensitivity, 1)));
+    rotate: calc(-30deg * var(--wind-sensitivity, 1));
+  }
+  79% {
+    transform: translate(calc(-22.3vw * var(--wind-sensitivity, 1)), calc(-7.2vh * var(--wind-sensitivity, 1)));
+    rotate: calc(-29deg * var(--wind-sensitivity, 1));
+  }
+  81% {
+    transform: translate(calc(-21.4vw * var(--wind-sensitivity, 1)), calc(-3.8vh * var(--wind-sensitivity, 1)));
+    rotate: calc(-28deg * var(--wind-sensitivity, 1));
+  }
+  83% {
+    transform: translate(calc(-20.1vw * var(--wind-sensitivity, 1)), calc(-1vh * var(--wind-sensitivity, 1)));
+    rotate: calc(-26deg * var(--wind-sensitivity, 1));
+  }
+  85% {
+    transform: translate(calc(-18.6vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(-24deg * var(--wind-sensitivity, 1));
+  }
+  90% {
+    transform: translate(calc(-13.5vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(-18deg * var(--wind-sensitivity, 1));
+  }
+  95% {
+    transform: translate(calc(-7.1vw * var(--wind-sensitivity, 1)), 0);
+    rotate: calc(-9deg * var(--wind-sensitivity, 1));
+  }
+  100% {
+    transform: translate(0, 0);
+    rotate: 0deg;
+  }
+}
+
+/* Capa 3: aleteo/loop local, independiente de la caída. La mayor parte del ciclo está
+   quieta; solo una ventana amplia y lenta traza un círculo completo (con giro sincronizado),
+   como una ráfaga puntual que atrapa la hoja y la suelta donde la encontró. */
+.floating-leaves__leaf-flutter {
+  animation: leaf-flutter var(--flutter-duration, 12s) linear infinite;
+  animation-delay: var(--flutter-delay, 0s);
+  will-change: translate, rotate;
+}
+
+/* Mismo criterio que la Capa 1: todo `linear`, entrada y salida del giro repartidas
+   en varios pasos que crecen/decrecen de a poco (56-65% y 90-100%), en vez de un
+   salto directo de reposo a giro completo. */
+@keyframes leaf-flutter {
+  0%,
+  50% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  56% {
+    translate: calc(var(--flutter-radius, 0.6rem) * 0.18) calc(var(--flutter-radius, 0.6rem) * 0.07);
+    rotate: 11deg;
+  }
+  61% {
+    translate: calc(var(--flutter-radius, 0.6rem) * 0.5) calc(var(--flutter-radius, 0.6rem) * 0.13);
+    rotate: 28deg;
+  }
+  65% {
+    translate: calc(var(--flutter-radius, 0.6rem) * 0.71) calc(var(--flutter-radius, 0.6rem) * 0.29);
+    rotate: 45deg;
+  }
+  70% {
+    translate: var(--flutter-radius, 0.6rem) var(--flutter-radius, 0.6rem);
+    rotate: 90deg;
+  }
+  75% {
+    translate: calc(var(--flutter-radius, 0.6rem) * 0.71) calc(var(--flutter-radius, 0.6rem) * 1.71);
+    rotate: 135deg;
+  }
+  80% {
+    translate: 0 calc(var(--flutter-radius, 0.6rem) * 2);
+    rotate: 180deg;
+  }
+  85% {
+    translate: calc(var(--flutter-radius, 0.6rem) * -0.71) calc(var(--flutter-radius, 0.6rem) * 1.71);
+    rotate: 225deg;
+  }
+  90% {
+    translate: calc(var(--flutter-radius, 0.6rem) * -1) var(--flutter-radius, 0.6rem);
+    rotate: 270deg;
+  }
+  94% {
+    translate: calc(var(--flutter-radius, 0.6rem) * -0.71) calc(var(--flutter-radius, 0.6rem) * 0.5);
+    rotate: 300deg;
+  }
+  97% {
+    translate: calc(var(--flutter-radius, 0.6rem) * -0.3) calc(var(--flutter-radius, 0.6rem) * 0.15);
+    rotate: 330deg;
+  }
+  100% {
+    translate: 0 0;
+    rotate: 360deg;
+  }
+}
+
+.floating-leaves__leaf-svg {
+  display: block;
+  width: calc(var(--size, 1) * 1.1rem);
+  height: calc(var(--size, 1) * 1.1rem);
+  color: var(--darkpink);
+}
+
+.floating-leaves__leaf-body {
+  fill: currentColor;
+}
+
+.floating-leaves__leaf-vein {
+  fill: none;
+  stroke: color-mix(in srgb, currentColor 65%, black 35%);
+  stroke-width: 0.6;
+  stroke-linecap: round;
+}
+
+/* Las 14 hojas se ven en todos los breakpoints (sin recorte por mobile). */
+@media (min-width: 440px) {
+  .floating-leaves__leaf-svg {
+    width: calc(var(--size, 1) * 1.25rem);
+    height: calc(var(--size, 1) * 1.25rem);
+  }
+}
+
+@media (min-width: 1200px) {
+  .floating-leaves__leaf-svg {
+    width: calc(var(--size, 1) * 1.4rem);
+    height: calc(var(--size, 1) * 1.4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-leaves {
+    display: none;
+  }
+}

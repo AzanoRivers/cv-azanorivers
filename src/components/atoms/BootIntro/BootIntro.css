@@ -1,0 +1,91 @@
+/* Secuencia de carga inicial (una sola vez, 1.4s): el logo aparece con opacidad
+   suave, laten los 4 puntos mientras "carga", y se va. A partir de ahí el dock
+   (NavDock.css) y el selector de idioma (LanguageSelector.css) continúan la
+   coreografía con sus propios delays, encadenados a estos mismos tiempos. */
+.boot-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  pointer-events: none;
+  opacity: 0;
+  animation: boot-intro-lifecycle 1400ms forwards;
+}
+
+.boot-intro__logo {
+  width: 4rem;
+  height: 4rem;
+  fill: var(--darkpink);
+}
+
+.boot-intro__dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.boot-intro__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: var(--darkpink);
+  animation: boot-intro-dot-pulse 600ms ease-in-out infinite;
+}
+
+.boot-intro__dot:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.boot-intro__dot:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+.boot-intro__dot:nth-child(4) {
+  animation-delay: 450ms;
+}
+
+@keyframes boot-intro-dot-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+}
+
+/* 0-21% (~0.3s): entra suave. 21-79% (~0.8s): visible, laten los puntos.
+   79-100% (~0.3s): se va y queda oculto (forwards + visibility:hidden). */
+@keyframes boot-intro-lifecycle {
+  0% {
+    opacity: 0;
+  }
+  21% {
+    opacity: 1;
+  }
+  79% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (min-width: 440px) {
+  .boot-intro__logo {
+    width: 5rem;
+    height: 5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-intro {
+    display: none;
+  }
+}

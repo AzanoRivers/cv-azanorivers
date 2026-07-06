@@ -1,0 +1,186 @@
+/* Mismas 3 fuentes autoalojadas de azanorivers-web (src/styles/fontstyles.css),
+   solo con los pesos que ese archivo realmente declara. No se trae el
+   sistema de parseo de contenido de AzanoRivers (MarkToHtml/MarkToComponent):
+   acá el contenido va directo por i18n/props, sin marcado propio. */
+
+/* Inter (autoalojada vía @fontsource, sin llamada a CDN externa): solo para
+   texto normal (.text-body/.text-muted), pensada para lectura cómoda de
+   párrafos largos. Títulos/subtítulos y la cursiva de énfasis se quedan con
+   Encode Sans SC / Source Code Pro como estaban. */
+@import '@fontsource/inter/400.css';
+
+@layer base {
+  /* ===== ENCODE SANS SC (títulos/subtítulos) ===== */
+  @font-face {
+    font-family: 'Encode Sans SC';
+    font-weight: 300;
+    font-style: normal;
+    src: url('/fonts/EncodeSansSC/EncodeSansSC-Light.woff2') format('woff2'),
+         url('/fonts/EncodeSansSC/EncodeSansSC-Light.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Encode Sans SC';
+    font-weight: 400;
+    font-style: normal;
+    src: url('/fonts/EncodeSansSC/EncodeSansSC-Regular.woff2') format('woff2'),
+         url('/fonts/EncodeSansSC/EncodeSansSC-Regular.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Encode Sans SC';
+    font-weight: 600;
+    font-style: normal;
+    src: url('/fonts/EncodeSansSC/EncodeSansSC-SemiBold.woff2') format('woff2'),
+         url('/fonts/EncodeSansSC/EncodeSansSC-SemiBold.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Encode Sans SC';
+    font-weight: 700;
+    font-style: normal;
+    src: url('/fonts/EncodeSansSC/EncodeSansSC-Bold.woff2') format('woff2'),
+         url('/fonts/EncodeSansSC/EncodeSansSC-Bold.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  /* ===== IBM PLEX MONO (badges, tech stack, código) ===== */
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 100;
+    font-style: normal;
+    src: url('/fonts/IBMPlexMono/IBMPlexMono-Thin.woff2') format('woff2'),
+         url('/fonts/IBMPlexMono/IBMPlexMono-Thin.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 300;
+    font-style: normal;
+    src: url('/fonts/IBMPlexMono/IBMPlexMono-Light.woff2') format('woff2'),
+         url('/fonts/IBMPlexMono/IBMPlexMono-Light.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 400;
+    font-style: normal;
+    src: url('/fonts/IBMPlexMono/IBMPlexMono-Regular.woff2') format('woff2'),
+         url('/fonts/IBMPlexMono/IBMPlexMono-Regular.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 500;
+    font-style: normal;
+    src: url('/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2') format('woff2'),
+         url('/fonts/IBMPlexMono/IBMPlexMono-Medium.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 600;
+    font-style: normal;
+    src: url('/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2') format('woff2'),
+         url('/fonts/IBMPlexMono/IBMPlexMono-SemiBold.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 700;
+    font-style: normal;
+    src: url('/fonts/IBMPlexMono/IBMPlexMono-Bold.woff2') format('woff2'),
+         url('/fonts/IBMPlexMono/IBMPlexMono-Bold.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 400;
+    font-style: italic;
+    src: url('/fonts/IBMPlexMono/IBMPlexMono-Italic.woff2') format('woff2'),
+         url('/fonts/IBMPlexMono/IBMPlexMono-Italic.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: 700;
+    font-style: italic;
+    src: url('/fonts/IBMPlexMono/IBMPlexMono-BoldItalic.woff2') format('woff2'),
+         url('/fonts/IBMPlexMono/IBMPlexMono-BoldItalic.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  /* ===== SOURCE CODE PRO (cuerpo de texto) ===== */
+  @font-face {
+    font-family: 'Source Code Pro';
+    font-weight: 300;
+    font-style: normal;
+    src: url('/fonts/SourceCodePro/SourceCodePro-Light.woff2') format('woff2'),
+         url('/fonts/SourceCodePro/SourceCodePro-Light.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Source Code Pro';
+    font-weight: 400;
+    font-style: normal;
+    src: url('/fonts/SourceCodePro/SourceCodePro-Regular.woff2') format('woff2'),
+         url('/fonts/SourceCodePro/SourceCodePro-Regular.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Source Code Pro';
+    font-weight: 500;
+    font-style: normal;
+    src: url('/fonts/SourceCodePro/SourceCodePro-Medium.woff2') format('woff2'),
+         url('/fonts/SourceCodePro/SourceCodePro-Medium.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Source Code Pro';
+    font-weight: 600;
+    font-style: normal;
+    src: url('/fonts/SourceCodePro/SourceCodePro-SemiBold.woff2') format('woff2'),
+         url('/fonts/SourceCodePro/SourceCodePro-SemiBold.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Source Code Pro';
+    font-weight: 700;
+    font-style: normal;
+    src: url('/fonts/SourceCodePro/SourceCodePro-Bold.woff2') format('woff2'),
+         url('/fonts/SourceCodePro/SourceCodePro-Bold.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Source Code Pro';
+    font-weight: 400;
+    font-style: italic;
+    src: url('/fonts/SourceCodePro/SourceCodePro-Italic.woff2') format('woff2'),
+         url('/fonts/SourceCodePro/SourceCodePro-Italic.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Source Code Pro';
+    font-weight: 700;
+    font-style: italic;
+    src: url('/fonts/SourceCodePro/SourceCodePro-BoldItalic.woff2') format('woff2'),
+         url('/fonts/SourceCodePro/SourceCodePro-BoldItalic.ttf') format('truetype');
+    font-display: swap;
+  }
+}

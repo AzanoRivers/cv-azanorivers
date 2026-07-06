@@ -1,0 +1,222 @@
+---
+import '@/components/molecules/EmailReveal/EmailReveal.css'
+import type { Translations } from '@/i18n'
+import { Mail, Send, Copy, Check } from 'lucide-react'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+---
+
+<div class="email-reveal">
+    <button
+        type="button"
+        class="email-reveal__trigger"
+        aria-label={t.contact.emailTrigger}
+        data-i18n-aria="contact.emailTrigger">
+        <Mail className="email-reveal__trigger-icon" strokeWidth={1.5} aria-hidden="true" />
+        <span data-i18n="contact.emailTrigger">{t.contact.emailTrigger}</span>
+    </button>
+
+    <div class="email-reveal__captcha">
+        <div class="email-reveal__captcha-row">
+            <canvas class="email-reveal__digit" data-digit="a" width="44" height="56" aria-hidden="true"></canvas>
+            <span class="email-reveal__op" aria-hidden="true">+</span>
+            <canvas class="email-reveal__digit" data-digit="b" width="44" height="56" aria-hidden="true"></canvas>
+            <span class="email-reveal__op" aria-hidden="true">=</span>
+            <input
+                type="number"
+                inputmode="numeric"
+                class="email-reveal__captcha-input"
+                placeholder="?"
+                aria-label={t.contact.captchaAnswerLabel}
+                data-i18n-aria="contact.captchaAnswerLabel"
+            />
+            <Check className="email-reveal__captcha-check" strokeWidth={2.5} aria-hidden="true" />
+        </div>
+        <span class="email-reveal__captcha-retry" data-i18n="contact.captchaRetry">{t.contact.captchaRetry}</span>
+    </div>
+
+    <div class="email-reveal__result">
+        <span class="email-reveal__email-text"></span>
+        <a class="email-reveal__action" data-action="send" aria-label={t.contact.emailSend} data-i18n-aria="contact.emailSend">
+            <Send strokeWidth={1.5} aria-hidden="true" />
+        </a>
+        <button
+            type="button"
+            class="email-reveal__action"
+            data-action="copy"
+            aria-label={t.contact.emailCopy}
+            data-i18n-aria="contact.emailCopy">
+            <Copy className="email-reveal__copy-icon" strokeWidth={1.5} aria-hidden="true" />
+            <Check className="email-reveal__copied-icon" strokeWidth={2} aria-hidden="true" />
+        </button>
+        <span class="email-reveal__copied-label" data-i18n="contact.emailCopied">{t.contact.emailCopied}</span>
+    </div>
+</div>
+
+<script>
+    // Ofuscación básica del correo contra scrapers estáticos (los que leen
+    // el HTML/JS de la página buscando patrones "algo@algo.algo" sin
+    // ejecutar nada): nunca aparece como texto plano en el código fuente,
+    // se arma recién acá desde códigos de caracteres, y ni siquiera eso pasa
+    // hasta que el captcha se resuelve. No es seguridad real (cualquiera que
+    // lea este mismo script puede decodificarlo), es fricción contra el
+    // barrido automático más básico.
+    const EMAIL_CHAR_CODES = [
+        106, 111, 98, 46, 100, 101, 118, 99, 111, 100, 101, 64, 103, 109, 97, 105, 108, 46, 99, 111, 109,
+    ]
+    const getEmail = () => String.fromCharCode(...EMAIL_CHAR_CODES)
+
+    // Los dígitos se pintan en <canvas> como bitmap, no como texto del DOM:
+    // así no hay ningún nodo de texto que un bot pueda leer/copiar para
+    // resolver la suma sin "ver" la imagen (mismo criterio que el
+    // MathCaptcha real de modus-ratio). Colores tomados en vivo de las
+    // custom properties del proyecto (no hardcodeados) para no duplicar la
+    // paleta acá.
+    const rootStyles = getComputedStyle(document.documentElement)
+    const lightblue = rootStyles.getPropertyValue('--lightblue').trim()
+    const background = rootStyles.getPropertyValue('--background').trim()
+    const digitColors = {
+        bg: `color-mix(in srgb, ${background} 88%, black)`,
+        border: lightblue,
+        lines: `color-mix(in srgb, ${lightblue} 8%, transparent)`,
+        glow: `color-mix(in srgb, ${lightblue} 45%, transparent)`,
+        digit: lightblue,
+    }
+
+    function drawDigit(canvas: HTMLCanvasElement, digit: number) {
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+        const width = canvas.width
+        const height = canvas.height
+
+        ctx.clearRect(0, 0, width, height)
+
+        ctx.fillStyle = digitColors.bg
+        ctx.fillRect(0, 0, width, height)
+
+        ctx.strokeStyle = digitColors.border
+        ctx.lineWidth = 1.5
+        ctx.strokeRect(1, 1, width - 2, height - 2)
+
+        ctx.fillStyle = digitColors.lines
+        for (let y = 0; y < height; y += 4) {
+            ctx.fillRect(0, y, width, 2)
+        }
+
+        // Ligero temblor horizontal aleatorio en cada dibujo: rompe el
+        // patrón fijo de posición que un reconocimiento automatizado podría
+        // aprender a esperar siempre en el mismo píxel.
+        const jitter = (Math.random() - 0.5) * 4
+
+        ctx.font = 'bold 28px "IBM Plex Mono", monospace'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+
+        ctx.fillStyle = digitColors.glow
+        ctx.fillText(String(digit), width / 2 + jitter + 1.5, height / 2 + 1.5)
+
+        ctx.fillStyle = digitColors.digit
+        ctx.fillText(String(digit), width / 2 + jitter, height / 2)
+    }
+
+    document.querySelectorAll<HTMLElement>('.email-reveal').forEach((root) => {
+        const trigger = root.querySelector<HTMLButtonElement>('.email-reveal__trigger')
+        const captchaBox = root.querySelector<HTMLElement>('.email-reveal__captcha')
+        const digitA = root.querySelector<HTMLCanvasElement>('[data-digit="a"]')
+        const digitB = root.querySelector<HTMLCanvasElement>('[data-digit="b"]')
+        const captchaInput = root.querySelector<HTMLInputElement>('.email-reveal__captcha-input')
+        const result = root.querySelector<HTMLElement>('.email-reveal__result')
+        const emailText = root.querySelector<HTMLElement>('.email-reveal__email-text')
+        const sendAction = root.querySelector<HTMLAnchorElement>('[data-action="send"]')
+        const copyAction = root.querySelector<HTMLButtonElement>('[data-action="copy"]')
+
+        if (
+            !trigger ||
+            !captchaBox ||
+            !digitA ||
+            !digitB ||
+            !captchaInput ||
+            !result ||
+            !emailText ||
+            !sendAction ||
+            !copyAction
+        ) {
+            return
+        }
+
+        let a = 0
+        let b = 0
+        let retryTimeout: ReturnType<typeof setTimeout> | undefined
+
+        function newChallenge() {
+            a = Math.floor(Math.random() * 9) + 1
+            b = Math.floor(Math.random() * 9) + 1
+            drawDigit(digitA!, a)
+            drawDigit(digitB!, b)
+            captchaInput!.value = ''
+            captchaInput!.disabled = false
+            root.classList.remove('email-reveal--valid', 'email-reveal--error')
+        }
+
+        trigger.addEventListener('click', () => {
+            root.classList.add('email-reveal--captcha')
+            newChallenge()
+            captchaInput.focus()
+        })
+
+        captchaInput.addEventListener('input', () => {
+            clearTimeout(retryTimeout)
+            const value = captchaInput.value
+
+            if (value === '') {
+                root.classList.remove('email-reveal--error')
+                return
+            }
+
+            const parsed = Number(value)
+
+            if (parsed === a + b) {
+                root.classList.add('email-reveal--valid')
+                root.classList.remove('email-reveal--error')
+                captchaInput.disabled = true
+
+                setTimeout(() => {
+                    const email = getEmail()
+                    emailText.textContent = email
+                    sendAction.href = `mailto:${email}`
+                    root.classList.remove('email-reveal--captcha')
+                    root.classList.add('email-reveal--revealed')
+                }, 500)
+                return
+            }
+
+            // Recién se marca error (y se regenera la suma) cuando la
+            // cantidad de dígitos ya alcanzó a la de la respuesta correcta:
+            // así no se ve un "error" falso a mitad de tipear un número de
+            // 2 cifras que iba a terminar siendo correcto.
+            if (value.length >= String(a + b).length) {
+                root.classList.add('email-reveal--error')
+                retryTimeout = setTimeout(newChallenge, 900)
+            } else {
+                root.classList.remove('email-reveal--error')
+            }
+        })
+
+        copyAction.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(getEmail())
+            } catch {
+                // Clipboard API no disponible (contexto no seguro, permiso
+                // denegado, etc.): el correo ya quedó visible como texto
+                // seleccionable a mano, así que no hace falta un fallback.
+                return
+            }
+            root.classList.add('email-reveal--copied')
+            setTimeout(() => root.classList.remove('email-reveal--copied'), 1600)
+        })
+    })
+</script>

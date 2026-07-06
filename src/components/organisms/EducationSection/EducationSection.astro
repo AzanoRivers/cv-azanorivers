@@ -1,0 +1,86 @@
+---
+import '@/components/organisms/EducationSection/EducationSection.css'
+import { TechCard } from '@/components/molecules'
+import type { Translations } from '@/i18n'
+import { GraduationCap, Landmark, Lightbulb, MonitorPlay, Flower2 } from 'lucide-react'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+---
+
+<section id="educacion" class="education-section">
+    <div class="education-section__header">
+        <GraduationCap className="education-section__header-icon" strokeWidth={1.5} aria-hidden="true" />
+        <h2 class="education-section__title text-title" data-i18n="education.title">{t.education.title}</h2>
+        <p class="education-section__description text-body" data-i18n="education.description">{t.education.description}</p>
+    </div>
+    <div class="education-section__cards">
+        <TechCard
+            title={t.education.university.title}
+            titleI18nKey="education.university.title"
+            description={t.education.university.description}
+            descriptionI18nKey="education.university.description">
+            <Landmark slot="icon" strokeWidth={1.5} aria-hidden="true" />
+        </TechCard>
+        <TechCard
+            accent="green"
+            title={t.education.selfTaught.title}
+            titleI18nKey="education.selfTaught.title"
+            description={t.education.selfTaught.description}
+            descriptionI18nKey="education.selfTaught.description">
+            <Lightbulb slot="icon" strokeWidth={1.5} aria-hidden="true" />
+        </TechCard>
+        <TechCard
+            title={t.education.virtualLearning.title}
+            titleI18nKey="education.virtualLearning.title"
+            description={t.education.virtualLearning.description}
+            descriptionI18nKey="education.virtualLearning.description">
+            <MonitorPlay slot="icon" strokeWidth={1.5} aria-hidden="true" />
+        </TechCard>
+        <TechCard
+            accent="green"
+            title={t.education.botany.title}
+            titleI18nKey="education.botany.title"
+            description={t.education.botany.description}
+            descriptionI18nKey="education.botany.description">
+            <Flower2 slot="icon" strokeWidth={1.5} aria-hidden="true" />
+        </TechCard>
+    </div>
+</section>
+
+<script>
+    const section = document.querySelector('.education-section')
+
+    if (section) {
+        let isIntersecting = false
+        let orchestrationDone = !document.documentElement.classList.contains('is-loading')
+
+        const tryReveal = () => {
+            if (!isIntersecting || !orchestrationDone) return
+            section.classList.add('education-section--visible')
+            observer.disconnect()
+            document.removeEventListener('scroll-unlocked', onOrchestrationDone)
+        }
+
+        const onOrchestrationDone = () => {
+            orchestrationDone = true
+            tryReveal()
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    isIntersecting = true
+                    tryReveal()
+                }
+            },
+            { threshold: 0.1 },
+        )
+
+        observer.observe(section)
+        if (!orchestrationDone) document.addEventListener('scroll-unlocked', onOrchestrationDone)
+    }
+</script>

@@ -1,0 +1,332 @@
+---
+import '@/components/organisms/ExperienceSection/ExperienceSection.css'
+import { ExperienceCard } from '@/components/molecules'
+import type { Translations } from '@/i18n'
+import { X, Hand, Pointer, Briefcase } from 'lucide-react'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+
+// Fechas ajustadas por el usuario (revisión del 06-07-2026). "null" en
+// dateEnd = trabajo actual (Presente).
+const mainJobs = [
+    { key: 'ximil', item: 'ximil', dateStart: 2009, dateEnd: 2010, job: t.experience.jobs.ximil },
+    { key: 'avancys', item: 'avancys', dateStart: 2015, dateEnd: 2016, job: t.experience.jobs.avancys },
+    { key: 'sic', item: 'sic', dateStart: 2016, dateEnd: 2017, job: t.experience.jobs.sic },
+    { key: 'bbva', item: 'bbva', dateStart: 2017, dateEnd: 2020, job: t.experience.jobs.bbva },
+    { key: 'perspectivaK', item: 'perspectivaK', dateStart: 2021, dateEnd: 2022, job: t.experience.jobs.perspectivaK },
+    { key: 'codelabs', item: 'codelabs', dateStart: 2022, dateEnd: null, job: t.experience.jobs.codelabs },
+]
+
+const freelanceJob = { key: 'freelance', item: 'freelance', dateStart: 2020, dateEnd: null, job: t.experience.jobs.freelance }
+---
+
+<section id="experiencia" class="experience-section">
+    <div class="experience-section__header">
+        <Briefcase className="experience-section__header-icon" strokeWidth={1.5} aria-hidden="true" />
+        <h2 class="experience-section__title text-title" data-i18n="experience.title">{t.experience.title}</h2>
+        <p class="experience-section__subtitle text-subtitle" data-i18n="experience.subtitle">{t.experience.subtitle}</p>
+    </div>
+
+    <button type="button" class="experience-section__gate">
+        <span class="experience-section__gate-label">
+            <span class="experience-section__gate-title" data-i18n="experience.gateTitle">{t.experience.gateTitle}</span>
+            <span class="experience-section__gate-subtitle" data-i18n="experience.gateSubtitle">{t.experience.gateSubtitle}</span>
+        </span>
+    </button>
+
+    <div class="experience-timeline">
+        <button type="button" class="experience-timeline__close" aria-label={t.experience.closeLabel} data-i18n-aria="experience.closeLabel">
+            <X className="experience-timeline__close-icon" strokeWidth={1.5} aria-hidden="true" />
+        </button>
+        <div class="experience-timeline__progress-wrap">
+            <span class="experience-timeline__progress-label">0%</span>
+            <progress class="experience-timeline__progress" value="0" max="100"></progress>
+        </div>
+        <div class="experience-timeline__hint" aria-hidden="true">
+            <Hand className="experience-timeline__hint-icon experience-timeline__hint-icon--desktop" strokeWidth={1.5} />
+            <Pointer className="experience-timeline__hint-icon experience-timeline__hint-icon--mobile" strokeWidth={1.5} />
+        </div>
+        <div class="experience-timeline__scroll">
+        <div class="experience-timeline__track">
+            <div class="experience-timeline__ruler" aria-hidden="true"></div>
+            <div class="experience-timeline__freelance-line" aria-hidden="true"></div>
+            <svg
+                class="experience-timeline__branch"
+                viewBox="0 0 32 8"
+                preserveAspectRatio="none"
+                aria-hidden="true">
+                <path d="M0,0 C16,0 16,8 32,8" fill="none" stroke-width="2" />
+            </svg>
+            {mainJobs.map(({ item, dateStart, dateEnd, job }) => (
+                <div class:list={['experience-timeline__item', 'experience-timeline__item--main', `experience-timeline__item--${item}`]}>
+                    <div class="experience-timeline__bar" aria-hidden="true"></div>
+                    <ExperienceCard
+                        company={job.company}
+                        companyI18nKey={`experience.jobs.${item}.company`}
+                        role={job.role}
+                        roleI18nKey={`experience.jobs.${item}.role`}
+                        dateStart={dateStart}
+                        dateEnd={dateEnd}
+                        presentLabel={t.experience.presentLabel}
+                        presentI18nKey="experience.presentLabel"
+                        responsibilityOne={job.responsibilityOne}
+                        responsibilityOneI18nKey={`experience.jobs.${item}.responsibilityOne`}
+                        responsibilityTwo={job.responsibilityTwo}
+                        responsibilityTwoI18nKey={`experience.jobs.${item}.responsibilityTwo`}
+                        badgeOne={job.badgeOne}
+                        badgeOneI18nKey={`experience.jobs.${item}.badgeOne`}
+                        badgeTwo={job.badgeTwo}
+                        badgeTwoI18nKey={`experience.jobs.${item}.badgeTwo`}
+                        badgeThree={job.badgeThree}
+                        badgeThreeI18nKey={`experience.jobs.${item}.badgeThree`}
+                    />
+                </div>
+            ))}
+            <div class:list={['experience-timeline__item', 'experience-timeline__item--freelance', `experience-timeline__item--${freelanceJob.item}`]}>
+                <div class="experience-timeline__bar" aria-hidden="true"></div>
+                <ExperienceCard
+                    company={freelanceJob.job.company}
+                    companyI18nKey={`experience.jobs.${freelanceJob.item}.company`}
+                    role={freelanceJob.job.role}
+                    roleI18nKey={`experience.jobs.${freelanceJob.item}.role`}
+                    dateStart={freelanceJob.dateStart}
+                    dateEnd={freelanceJob.dateEnd}
+                    presentLabel={t.experience.presentLabel}
+                    presentI18nKey="experience.presentLabel"
+                    responsibilityOne={freelanceJob.job.responsibilityOne}
+                    responsibilityOneI18nKey={`experience.jobs.${freelanceJob.item}.responsibilityOne`}
+                    responsibilityTwo={freelanceJob.job.responsibilityTwo}
+                    responsibilityTwoI18nKey={`experience.jobs.${freelanceJob.item}.responsibilityTwo`}
+                    badgeOne={freelanceJob.job.badgeOne}
+                    badgeOneI18nKey={`experience.jobs.${freelanceJob.item}.badgeOne`}
+                    badgeTwo={freelanceJob.job.badgeTwo}
+                    badgeTwoI18nKey={`experience.jobs.${freelanceJob.item}.badgeTwo`}
+                />
+            </div>
+        </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    const section = document.querySelector('.experience-section')
+    const gate = document.querySelector<HTMLButtonElement>('.experience-section__gate')
+    const gateLabel = document.querySelector('.experience-section__gate-label')
+    const timeline = document.querySelector('.experience-timeline')
+    const scrollArea = document.querySelector<HTMLElement>('.experience-timeline__scroll')
+    const hint = document.querySelector('.experience-timeline__hint')
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const revealTimelineContent = () => {
+        timeline?.classList.add('experience-timeline--revealing')
+
+        // La manita se queda oculta hasta que termina TODA la cascada (7
+        // tarjetas + regla/líneas, 1900ms) y recién ahí se le agrega su
+        // propia clase que la muestra Y arranca el vaivén al toque, sin
+        // ningún animation-delay de por medio. Antes dependía de un
+        // animation-delay de CSS mientras estaba con opacity:0 por
+        // transition, y en la práctica quedaba visible sin moverse.
+        setTimeout(
+            () => hint?.classList.add('experience-timeline__hint--ready'),
+            reducedMotion ? 0 : 1900,
+        )
+    }
+
+    // El scroll horizontal interno arranca normal, en 0 (Ximil primero). Lo
+    // que sí se mueve es el scroll DE LA PÁGINA. `scrollIntoView` no
+    // servía: si el botón ya estaba más o menos visible, el navegador
+    // consideraba la condición cumplida y no movía nada. Calcularlo a mano
+    // tampoco alcanzaba si se dispara ANTES de que el botón empiece a
+    // crecer: en ese momento la página todavía no tiene alto suficiente
+    // como para poder scrollear más abajo (el documento crece recién
+    // cuando el `height` del botón empieza a transicionar), así que el
+    // navegador recorta el scroll al máximo que existe en ese instante y
+    // no se mueve. Por eso se dispara justo cuando arranca el estirón
+    // (`--expanding`), no antes: ahí la página ya está creciendo en vivo
+    // y sí hay a dónde bajar.
+    const scrollPageToTimeline = () => {
+        const target = section?.classList.contains('experience-section--revealed') ? timeline : gate
+        if (!target) return
+        const targetTop = target.getBoundingClientRect().top + window.scrollY - 96
+        window.scrollTo({ top: targetTop, behavior: reducedMotion ? 'auto' : 'smooth' })
+    }
+
+    gate?.addEventListener('click', () => {
+        if (reducedMotion || !gateLabel) {
+            section?.classList.add('experience-section--revealed')
+            revealTimelineContent()
+            scrollPageToTimeline()
+            return
+        }
+
+        // Secuencia: 1) el texto del botón se desvanece, 2) el botón se
+        // estira al tamaño de la caja de la línea de tiempo (ahí se dispara
+        // el scroll de la página, en paralelo con el estirón), 3) recién ahí
+        // se intercambia por el contenido real (mismo look, así que el
+        // cambio no se nota) y arranca la revelación tarjeta por tarjeta.
+        gate.classList.add('experience-section__gate--collapsing')
+
+        gateLabel.addEventListener(
+            'transitionend',
+            () => {
+                gate.classList.add('experience-section__gate--expanding')
+                scrollPageToTimeline()
+
+                // Nada de { once: true } acá: max-width y height transicionan
+                // en paralelo con la misma duración, y el navegador no
+                // garantiza cuál de los dos dispara su transitionend primero.
+                // Con { once: true } + filtro por nombre, si llegaba primero
+                // el evento "equivocado" el listener se autodestruía sin
+                // haber hecho nada, y el resto de la secuencia nunca arrancaba.
+                const onExpandEnd = (event: TransitionEvent) => {
+                    if (event.propertyName !== 'height' && event.propertyName !== 'max-width') return
+                    gate.removeEventListener('transitionend', onExpandEnd)
+                    section?.classList.add('experience-section--revealed')
+                    revealTimelineContent()
+                }
+
+                gate.addEventListener('transitionend', onExpandEnd)
+            },
+            { once: true },
+        )
+    })
+
+    // Cerrar: secuencia inversa a la de abrir, no un salto seco.
+    // `.experience-section__gate` está en `display:none` mientras la caja
+    // está abierta, así que no alcanza con solo sacarle las clases: al
+    // volver a `display:flex` y perder `--expanding` en el mismo instante,
+    // el navegador nunca llega a pintar un frame "grande" del que animar el
+    // achique (display no es animable). Por eso: 1) se deja el botón ya
+    // marcado como grande/sin texto, 2) se hace el swap (oculta la caja,
+    // aparece el botón, ya grande, sin salto), 3) se fuerza un reflow para
+    // que ese frame "grande" quede realmente pintado, 4) recién ahí se le
+    // saca `--expanding` (ahora sí anima el achique de verdad) y 5) al
+    // terminar esa transición, se le saca `--collapsing` para que el texto
+    // reaparezca con su propio fade.
+    const closeButton = document.querySelector('.experience-timeline__close')
+    closeButton?.addEventListener('click', () => {
+        timeline?.classList.remove('experience-timeline--revealing')
+
+        if (reducedMotion || !gate) {
+            section?.classList.remove('experience-section--revealed')
+            gate?.classList.remove('experience-section__gate--collapsing', 'experience-section__gate--expanding')
+            return
+        }
+
+        gate.classList.add('experience-section__gate--expanding', 'experience-section__gate--collapsing')
+        section?.classList.remove('experience-section--revealed')
+
+        // Fuerza el reflow: sin esto, el navegador podría agrupar el cambio
+        // de abajo con el de arriba y seguir sin pintar el estado grande.
+        void gate.offsetHeight
+
+        requestAnimationFrame(() => {
+            gate.classList.remove('experience-section__gate--expanding')
+
+            const onShrinkEnd = (event: TransitionEvent) => {
+                if (event.propertyName !== 'height' && event.propertyName !== 'max-width') return
+                gate.removeEventListener('transitionend', onShrinkEnd)
+                gate.classList.remove('experience-section__gate--collapsing')
+            }
+
+            gate.addEventListener('transitionend', onShrinkEnd)
+        })
+    })
+
+    const progressBar = document.querySelector<HTMLProgressElement>('.experience-timeline__progress')
+    const progressLabel = document.querySelector('.experience-timeline__progress-label')
+
+    if (scrollArea && progressBar && progressLabel) {
+        const updateProgress = () => {
+            const maxScroll = scrollArea.scrollWidth - scrollArea.clientWidth
+            const percent = maxScroll > 0 ? Math.round((scrollArea.scrollLeft / maxScroll) * 100) : 0
+            progressBar.value = percent
+            progressLabel.textContent = `${percent}%`
+        }
+
+        scrollArea.addEventListener('scroll', updateProgress, { passive: true })
+        updateProgress()
+
+        // Ícono de arrastre: se esconde apenas hay scroll (en cualquier
+        // dirección) y reaparece solo si pasa 1s sin actividad.
+        let hintTimeoutId: ReturnType<typeof setTimeout> | undefined
+
+        const handleScrollActivity = () => {
+            hint?.classList.add('experience-timeline__hint--hidden')
+            clearTimeout(hintTimeoutId)
+            hintTimeoutId = setTimeout(() => {
+                hint?.classList.remove('experience-timeline__hint--hidden')
+            }, 1000)
+        }
+
+        scrollArea.addEventListener('scroll', handleScrollActivity, { passive: true })
+
+        // Arrastre con mouse en las 2 direcciones: el trackpad ya hace scroll
+        // con dos dedos (horizontal y vertical), pero un mouse normal no
+        // tiene ese gesto. El scroll nativo (rueda, barra, touch) sigue
+        // funcionando en paralelo.
+        let isDragging = false
+        let dragStartX = 0
+        let dragStartY = 0
+        let dragStartScrollLeft = 0
+        let dragStartScrollTop = 0
+
+        scrollArea.addEventListener('mousedown', (event) => {
+            isDragging = true
+            dragStartX = event.pageX
+            dragStartY = event.pageY
+            dragStartScrollLeft = scrollArea.scrollLeft
+            dragStartScrollTop = scrollArea.scrollTop
+            scrollArea.classList.add('experience-timeline__scroll--dragging')
+        })
+
+        window.addEventListener('mousemove', (event) => {
+            if (!isDragging) return
+            event.preventDefault()
+            scrollArea.scrollLeft = dragStartScrollLeft - (event.pageX - dragStartX)
+            scrollArea.scrollTop = dragStartScrollTop - (event.pageY - dragStartY)
+        })
+
+        const stopDragging = () => {
+            isDragging = false
+            scrollArea.classList.remove('experience-timeline__scroll--dragging')
+        }
+
+        window.addEventListener('mouseup', stopDragging)
+        scrollArea.addEventListener('mouseleave', stopDragging)
+    }
+
+    if (section) {
+        let isIntersecting = false
+        let orchestrationDone = !document.documentElement.classList.contains('is-loading')
+
+        const tryReveal = () => {
+            if (!isIntersecting || !orchestrationDone) return
+            section.classList.add('experience-section--visible')
+            observer.disconnect()
+            document.removeEventListener('scroll-unlocked', onOrchestrationDone)
+        }
+
+        const onOrchestrationDone = () => {
+            orchestrationDone = true
+            tryReveal()
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    isIntersecting = true
+                    tryReveal()
+                }
+            },
+            { threshold: 0.1 },
+        )
+
+        observer.observe(section)
+        if (!orchestrationDone) document.addEventListener('scroll-unlocked', onOrchestrationDone)
+    }
+</script>

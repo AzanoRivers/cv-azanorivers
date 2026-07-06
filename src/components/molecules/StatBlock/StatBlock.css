@@ -1,0 +1,42 @@
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.stat-block__value {
+  font-family: var(--font-encode);
+  font-weight: 700;
+  color: var(--darkpink);
+  font-size: 0.875rem;
+  line-height: 1.1;
+}
+
+.stat-block__label {
+  font-size: 0.5625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+}
+
+@media (min-width: 440px) {
+  .stat-block__value {
+    font-size: 1rem;
+  }
+
+  .stat-block__label {
+    font-size: 0.625rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .stat-block__value {
+    font-size: 1.25rem;
+  }
+
+  .stat-block__label {
+    font-size: 0.75rem;
+  }
+}

@@ -1,0 +1,113 @@
+---
+import '@/components/organisms/AboutSection/AboutSection.css'
+import { TechCard } from '@/components/molecules'
+import type { Translations } from '@/i18n'
+import { MonitorSmartphone, Blocks, Gamepad2, Sprout, Hand } from 'lucide-react'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+---
+
+<section id="sobre-mi" class="about-section">
+    <div class="about-section__content">
+        <button
+            type="button"
+            class="about-section__emoji-wrap"
+            aria-label={t.about.clapButtonLabel}
+            data-i18n-aria="about.clapButtonLabel">
+            <Hand className="about-section__emoji" strokeWidth={1.5} aria-hidden="true" />
+        </button>
+        <p class="about-section__eyebrow text-muted" data-i18n="about.eyebrow">{t.about.eyebrow}</p>
+        <h2 class="about-section__title text-title" data-i18n="about.title">{t.about.title}</h2>
+        <p class="about-section__paragraph text-body" data-i18n="about.paragraphOne">{t.about.paragraphOne}</p>
+        <p class="about-section__paragraph text-body" data-i18n="about.paragraphTwo">{t.about.paragraphTwo}</p>
+        <p class="about-section__paragraph text-body" data-i18n="about.paragraphThree">{t.about.paragraphThree}</p>
+    </div>
+    <div class="about-section__cards">
+        <TechCard
+            title={t.about.cards.webMobile.title}
+            titleI18nKey="about.cards.webMobile.title"
+            description={t.about.cards.webMobile.description}
+            descriptionI18nKey="about.cards.webMobile.description">
+            <MonitorSmartphone slot="icon" strokeWidth={1.5} aria-hidden="true" />
+        </TechCard>
+        <TechCard
+            title={t.about.cards.blockchain.title}
+            titleI18nKey="about.cards.blockchain.title"
+            description={t.about.cards.blockchain.description}
+            descriptionI18nKey="about.cards.blockchain.description">
+            <Blocks slot="icon" strokeWidth={1.5} aria-hidden="true" />
+        </TechCard>
+        <TechCard
+            title={t.about.cards.gaming.title}
+            titleI18nKey="about.cards.gaming.title"
+            description={t.about.cards.gaming.description}
+            descriptionI18nKey="about.cards.gaming.description">
+            <Gamepad2 slot="icon" strokeWidth={1.5} aria-hidden="true" />
+        </TechCard>
+        <TechCard
+            accent="green"
+            title={t.about.cards.iot.title}
+            titleI18nKey="about.cards.iot.title"
+            description={t.about.cards.iot.description}
+            descriptionI18nKey="about.cards.iot.description">
+            <Sprout slot="icon" strokeWidth={1.5} aria-hidden="true" />
+        </TechCard>
+    </div>
+</section>
+
+<script>
+    // Easter egg: cada clic/toque crea su propio "¡Clap!" independiente
+    // (se pueden acumular si se hace clic rápido varias veces), en una de 8
+    // posiciones fijas alrededor de la mano (ver AboutSection.css) elegida
+    // al azar. Nada de posiciones calculadas/inline: son 8 clases estáticas
+    // precalculadas, mismo patrón que FloatingLeaves.
+    const clapButton = document.querySelector('.about-section__emoji-wrap')
+
+    clapButton?.addEventListener('click', () => {
+        const clap = document.createElement('span')
+        const position = Math.floor(Math.random() * 8)
+        clap.className = `about-section__clap about-section__clap--pos-${position}`
+        clap.textContent = '¡Clap!'
+        clap.setAttribute('aria-hidden', 'true')
+        clapButton.appendChild(clap)
+        setTimeout(() => clap.remove(), 900)
+    })
+
+    const section = document.querySelector('.about-section')
+
+    if (section) {
+        let isIntersecting = false
+        // Si el script corre después de que ya se liberó el scroll (o con
+        // reduced-motion, que lo libera de entrada), no hay que esperar nada.
+        let orchestrationDone = !document.documentElement.classList.contains('is-loading')
+
+        const tryReveal = () => {
+            if (!isIntersecting || !orchestrationDone) return
+            section.classList.add('about-section--visible')
+            observer.disconnect()
+            document.removeEventListener('scroll-unlocked', onOrchestrationDone)
+        }
+
+        const onOrchestrationDone = () => {
+            orchestrationDone = true
+            tryReveal()
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    isIntersecting = true
+                    tryReveal()
+                }
+            },
+            { threshold: 0.2 },
+        )
+
+        observer.observe(section)
+        if (!orchestrationDone) document.addEventListener('scroll-unlocked', onOrchestrationDone)
+    }
+</script>

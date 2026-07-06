@@ -1,0 +1,21 @@
+---
+import '@/components/molecules/TechCard/TechCard.css'
+
+interface Props {
+    title: string
+    titleI18nKey?: string
+    description: string
+    descriptionI18nKey?: string
+    accent?: 'green'
+}
+
+const { title, titleI18nKey, description, descriptionI18nKey, accent } = Astro.props
+---
+
+<article class:list={['tech-card', accent === 'green' && 'tech-card--accent-green']}>
+    <div class="tech-card__icon" aria-hidden="true">
+        <slot name="icon" />
+    </div>
+    <h3 class="tech-card__title" data-i18n={titleI18nKey}>{title}</h3>
+    <p class="tech-card__description text-muted" data-i18n={descriptionI18nKey}>{description}</p>
+</article>

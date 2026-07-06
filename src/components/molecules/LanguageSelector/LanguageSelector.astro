@@ -1,0 +1,35 @@
+---
+import '@/components/molecules/LanguageSelector/LanguageSelector.css'
+import type { Translations } from '@/i18n'
+import { Languages } from 'lucide-react'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+---
+
+<div class="language-selector">
+    <Languages className="language-selector__icon" strokeWidth={1.5} aria-hidden="true" />
+    <div class="language-selector__options" role="group" aria-label={t.languageSelector.ariaLabel} data-i18n-aria="languageSelector.ariaLabel">
+        <button
+            type="button"
+            class="language-selector__option language-selector__option--active"
+            data-lang-option="es"
+            aria-pressed="true"
+        >
+            ES
+            <span class="language-selector__tooltip" role="tooltip" aria-hidden="true" data-i18n="languageSelector.es">{t.languageSelector.es}</span>
+        </button>
+        <button
+            type="button"
+            class="language-selector__option"
+            data-lang-option="en"
+            aria-pressed="false"
+        >
+            EN
+            <span class="language-selector__tooltip" role="tooltip" aria-hidden="true" data-i18n="languageSelector.en">{t.languageSelector.en}</span>
+        </button>
+    </div>
+</div>

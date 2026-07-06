@@ -1,17 +1,47 @@
 ---
+import { getImage } from 'astro:assets'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { LanguageSelector } from '@/components/molecules'
+import {
+    AboutSection,
+    Banner,
+    CertificationsSection,
+    ContactSection,
+    EducationSection,
+    ExperienceSection,
+    Footer,
+    NavDock,
+    TechStackSection,
+} from '@/components/organisms'
+import { getDictionary } from '@/i18n'
+import heroImage, { HERO_IMAGE_SIZE } from '@/assets/images/heroImage'
 
+const t = getDictionary('es')
+
+// Mismos parámetros que el <Image /> de PhotoCard.astro: así el preload apunta
+// exactamente al mismo archivo optimizado que Astro genera para esa imagen.
+const optimizedHeroImage = await getImage({
+    src: heroImage,
+    width: HERO_IMAGE_SIZE,
+    height: HERO_IMAGE_SIZE,
+})
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+    title="AzanoRivers - CV"
+    description="Hoja de vida de Andrés Rivera (AzanoRivers): desarrollador full stack."
+    preloadImageSrc={optimizedHeroImage.src}
+>
+    <LanguageSelector t={t} />
+    <NavDock t={t} />
+    <main>
+        <Banner t={t} />
+        <AboutSection t={t} />
+        <TechStackSection t={t} />
+        <ExperienceSection t={t} />
+        <CertificationsSection t={t} />
+        <EducationSection t={t} />
+        <ContactSection t={t} />
+    </main>
+    <Footer t={t} />
+</BaseLayout>

@@ -1,0 +1,26 @@
+---
+import '@/components/molecules/StatBlock/StatBlock.css'
+
+interface Props {
+    value: string
+    valueI18nKey?: string
+    label: string
+    labelI18nKey?: string
+    counterTarget?: number
+    counterPrefix?: string
+}
+
+const { value, valueI18nKey, label, labelI18nKey, counterTarget, counterPrefix = '' } = Astro.props
+const isCounter = counterTarget !== undefined
+---
+
+<div class="stat-block">
+    {isCounter ? (
+        <p class="stat-block__value" data-counter-target={counterTarget} data-counter-prefix={counterPrefix}>
+            {counterPrefix}{counterTarget}
+        </p>
+    ) : (
+        <p class="stat-block__value" data-i18n={valueI18nKey}>{value}</p>
+    )}
+    <p class="stat-block__label text-muted" data-i18n={labelI18nKey}>{label}</p>
+</div>

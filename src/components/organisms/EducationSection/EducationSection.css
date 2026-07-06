@@ -1,0 +1,63 @@
+.education-section {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+
+.education-section--visible {
+  opacity: 1;
+}
+
+.education-section__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.education-section__header-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--lightblue);
+}
+
+/* Sin subtítulo acá: en su lugar una descripción corta de una línea, un poco
+   más discreta que un párrafo de cuerpo normal. */
+.education-section__description {
+  max-width: 28rem;
+  color: var(--white-70);
+}
+
+.education-section__cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 600px) {
+  .education-section__cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .education-section {
+    padding: 2rem 3rem 6rem;
+  }
+
+  .education-section__cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .education-section {
+    transition: none;
+    opacity: 1;
+  }
+}

@@ -1,0 +1,619 @@
+/* Migrado de HoloGallery (azanolabs-web). El modal (más abajo, `.cert-lightbox`)
+   porta 1:1 el motor real del original: anillo virtual de tarjetas con
+   imagen fija (nunca se reasigna `src`), posicionadas cada frame por una
+   física de velocidad+fricción en `requestAnimationFrame` (ver el <script>
+   del .astro). Ese mismo motor SÍ escribe `width`/`filter`/`z-index` por
+   frame a propósito (igual que el original): con pocos elementos y sin
+   pasar por React, ese costo es aceptable y es lo que da el movimiento
+   fluido y orgánico real, no una aproximación con transiciones CSS. */
+.certifications-section {
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+
+/* Skeleton de carga: compartido entre las tiles del strip y las 3 imágenes
+   del modal. Va ARRIBA de la imagen (mayor z-index) y se desvanece cuando
+   esa imagen termina de cargar (el <script> reactiva esto a mano en el modal,
+   porque ahí se reasigna `src` sobre las mismas 3 imágenes en vez de crear
+   elementos nuevos). El scroll del strip nunca espera por esto: es puramente
+   visual, no bloquea nada. */
+.cert-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  background:
+    linear-gradient(color-mix(in srgb, var(--lightblue) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--lightblue) 8%, transparent) 1px, transparent 1px),
+    color-mix(in srgb, var(--background) 60%, black);
+  background-size: 12px 12px, 12px 12px, auto;
+  transition: opacity 400ms ease;
+}
+
+.cert-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--lightblue) 15%, transparent) 30%,
+    color-mix(in srgb, var(--white-90) 25%, transparent) 50%,
+    color-mix(in srgb, var(--lightblue) 15%, transparent) 70%,
+    transparent 100%
+  );
+  animation: cert-skeleton-sweep 1.9s ease-in-out infinite;
+}
+
+@keyframes cert-skeleton-sweep {
+  from {
+    transform: translateX(-170%);
+  }
+  to {
+    transform: translateX(220%);
+  }
+}
+
+.cert-skeleton--loaded {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.certifications-section--visible {
+  opacity: 1;
+}
+
+.certifications-section__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.certifications-section__header-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--lightblue);
+}
+
+.certifications-section__subtitle {
+  color: var(--white-70);
+}
+
+/* ————— Strip de miniaturas ————— */
+.cert-strip {
+  position: relative;
+  margin-top: 2rem;
+}
+
+.cert-strip__scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.cert-strip__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.cert-strip__scroll--dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* Niebla en los bordes (igual que el original de AzanoLabs: un degradé
+   sólido del color de fondo hacia transparente, no una máscara) para que las
+   miniaturas no se corten en seco contra el borde del strip. */
+/* "Persianas": líneas horizontales repetidas sobre TODO el strip (no por
+   miniatura), estilo scanline de CRT. Esto era lo que faltaba: no estaba en
+   ninguna tile individual en el original, sino como una capa fija encima de
+   todo el carrusel. */
+.cert-strip__scanlines {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 3px,
+    color-mix(in srgb, var(--lightblue) 10%, transparent) 3px,
+    color-mix(in srgb, var(--lightblue) 10%, transparent) 4px
+  );
+  mix-blend-mode: screen;
+}
+
+.cert-strip__edge {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 5rem;
+  z-index: 2;
+}
+
+.cert-strip__edge--left {
+  left: 0;
+  background: linear-gradient(to right, var(--background) 0%, transparent 100%);
+}
+
+.cert-strip__edge--right {
+  right: 0;
+  background: linear-gradient(to left, var(--background) 0%, transparent 100%);
+}
+
+.cert-strip__track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  padding: 0.5rem 1.25rem;
+}
+
+/* "Bisel" cyberpunk: esquina inferior derecha cortada en diagonal (clip-path,
+   no border-radius), se acentúa un poco más en hover junto con un realce de
+   brillo/saturación. */
+.cert-tile {
+  position: relative;
+  flex-shrink: 0;
+  width: 12rem;
+  height: 7.5rem;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  filter: brightness(0.85) saturate(0.9);
+  transition: transform 280ms cubic-bezier(0.2, 0, 0, 1), filter 280ms ease, clip-path 280ms ease;
+}
+
+.cert-tile:hover,
+.cert-tile:focus-visible {
+  transform: scale(1.04);
+  filter: brightness(1.05) saturate(1.15);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+  outline: none;
+}
+
+/* Línea diagonal explícita en la esquina: el clip-path de arriba SOLO recorta
+   la forma (no dibuja ningún borde sobre el corte), así que sin esto el
+   "bisel" prácticamente no se nota. Va bien adentro del área visible (no
+   pegada al borde recortado) para no arriesgarse a que el propio clip-path
+   se la corte. */
+.cert-tile__bevel-line {
+  pointer-events: none;
+  position: absolute;
+  bottom: 9px;
+  right: 5px;
+  width: 26px;
+  height: 2px;
+  background: color-mix(in srgb, var(--lightblue) 70%, transparent);
+  transform: rotate(-45deg);
+  transform-origin: right center;
+  transition: background-color 280ms ease, width 280ms ease;
+}
+
+.cert-tile:hover .cert-tile__bevel-line,
+.cert-tile:focus-visible .cert-tile__bevel-line {
+  width: 32px;
+  background: var(--lightblue);
+}
+
+.cert-tile__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Borde holográfico: pulsa solo mientras la tile no tiene foco/hover
+   (animation-play-state corre gratis en reposo, la pausamos en el glint de
+   abajo en vez de acá porque este SÍ debe seguir latiendo siempre). Hereda
+   el mismo bisel de arriba (clip-path: inherit) para que el borde también
+   quede cortado en diagonal, no rectangular. */
+.cert-tile__border {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  clip-path: inherit;
+  border: 1px solid color-mix(in srgb, var(--lightblue) 20%, transparent);
+  transition: border-color 280ms ease, box-shadow 280ms ease;
+  animation: cert-tile-pulse 3.5s ease-in-out infinite;
+}
+
+.cert-tile:hover .cert-tile__border,
+.cert-tile:focus-visible .cert-tile__border {
+  border-color: color-mix(in srgb, var(--lightblue) 70%, transparent);
+  animation: none;
+  box-shadow: inset 0 0 12px color-mix(in srgb, var(--lightblue) 20%, transparent);
+}
+
+@keyframes cert-tile-pulse {
+  0%,
+  100% {
+    border-color: color-mix(in srgb, var(--lightblue) 15%, transparent);
+  }
+  50% {
+    border-color: color-mix(in srgb, var(--lightblue) 45%, transparent);
+  }
+}
+
+/* Glint: banda diagonal completa (no una tira angosta) que barre la tile
+   entera. El keyframe deja "estacionado" el brillo una parte del ciclo antes
+   de repetirse (así no se ve como un barrido continuo sin pausa); ese hueco
+   se achicó a propósito para que, si te quedás con el cursor encima, no
+   tengas que esperar varios segundos a que vuelva a pasar. */
+.cert-tile__glint {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 20%,
+    color-mix(in srgb, var(--lightblue) 10%, transparent) 50%,
+    transparent 80%
+  );
+  transform: translateX(-120%);
+  animation: cert-tile-glint 2.2s linear infinite;
+  animation-play-state: paused;
+}
+
+.cert-tile:hover .cert-tile__glint,
+.cert-tile:focus-visible .cert-tile__glint {
+  animation-play-state: running;
+}
+
+@keyframes cert-tile-glint {
+  0% {
+    transform: translateX(-120%);
+  }
+  65%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* ————— Lightbox ————— */
+/* Sin backdrop-filter: blur() a propósito (el original lo sacó por lo mismo):
+   oscurecer con un color sólido bien opaco se ve prácticamente igual y no
+   obliga a la GPU a capturar/desenfocar/recomponer TODO lo que hay detrás
+   en cada frame mientras el modal está abierto. */
+.cert-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--background) 80%, transparent);
+  /* Aísla este subárbol del árbol de composición del resto de la página:
+     sin esto, el navegador tiene que recalcular la composición de TODA la
+     página en cada frame mientras el modal anima o el anillo 3D se mueve. */
+  contain: layout style paint;
+}
+
+/* "Persianas" del fondo: mismo repeating-linear-gradient horizontal que el
+   strip, pero acá cubriendo toda la pantalla del modal. */
+.cert-lightbox__backdrop-scanlines {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 3px,
+    color-mix(in srgb, var(--lightblue) 6%, transparent) 3px,
+    color-mix(in srgb, var(--lightblue) 6%, transparent) 4px
+  );
+}
+
+.cert-lightbox__backdrop-grid {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: linear-gradient(color-mix(in srgb, var(--lightblue) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--lightblue) 5%, transparent) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* Aberración cromática decorativa: estática, sin animación (el original la
+   dejó así a propósito: animar scale/rotate en un elemento a pantalla
+   completa cuesta presupuesto de repintado por un efecto casi imperceptible). */
+.cert-lightbox__backdrop-chroma {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 60% 60% at 50% 50%,
+    transparent 40%,
+    color-mix(in srgb, var(--lightblue) 8%, transparent) 60%,
+    color-mix(in srgb, var(--darkpink) 6%, transparent) 80%,
+    transparent 100%
+  );
+}
+
+/* CRÍTICO: la versión anterior animaba `clip-path` sobre ESTE elemento
+   (fullscreen, con las capas de scanlines+grid+chroma encima): eso obliga al
+   navegador a repintar la pantalla entera en cada frame de la animación, casi
+   bloqueando el hilo principal al abrir. Acá el overlay solo hace opacity
+   (compositor puro); la sensación de "persiana" queda en el stage de abajo,
+   que es chico y anima con transform, no con clip-path. */
+.cert-lightbox--open {
+  display: flex;
+  animation: cert-lightbox-open 180ms ease-out both;
+}
+
+.cert-lightbox--closing {
+  animation: cert-lightbox-close 160ms ease-in both;
+  pointer-events: none;
+}
+
+@keyframes cert-lightbox-open {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cert-lightbox-close {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.cert-lightbox__close,
+.cert-lightbox__nav {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--darkpink);
+  background-color: color-mix(in srgb, var(--background) 85%, transparent);
+  color: var(--white-90);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.cert-lightbox__close:hover,
+.cert-lightbox__nav:hover,
+.cert-lightbox__close:focus-visible,
+.cert-lightbox__nav:focus-visible {
+  background-color: color-mix(in srgb, var(--darkpink) 30%, transparent);
+  outline: none;
+}
+
+.cert-lightbox__close {
+  top: 1rem;
+  right: 1rem;
+}
+
+.cert-lightbox__nav {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.cert-lightbox__nav--prev {
+  left: 1rem;
+}
+
+.cert-lightbox__nav--next {
+  right: 1rem;
+}
+
+/* Sin overflow:hidden: las tarjetas lejanas del anillo se salen bien afuera
+   de este cuadro (llegan a asomar del otro lado de la pantalla), y como el
+   modal entero (.cert-lightbox) sí tiene overflow:hidden, quedan contenidas
+   ahí sin necesidad de recortar el stage mismo. `display:flex` + `center` es
+   lo que le da a cada tarjeta (position:absolute, sin top/left propios) su
+   posición de reposo centrada: el <script> solo le suma un `translateX` de
+   ahí en más, igual que en el HoloLightbox original. */
+.cert-lightbox__stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 72vh;
+  /* Necesario para que el rotateY de las tarjetas vecinas se vea como
+     profundidad real (perspectiva), no como un simple estirado plano. */
+  perspective: 1200px;
+  /* Reclama el gesto horizontal para nosotros: reduce la latencia con la
+     que el navegador nos deja llamar preventDefault en touchmove. */
+  touch-action: none;
+  transform-origin: top center;
+  /* El stage no intercepta clicks: cada tarjeta sí (pointer-events la pone
+     el <script> por frame, según qué tan cerca está del centro). */
+  pointer-events: none;
+}
+
+/* "Persiana" real, pero barata: acá el elemento es chico (no fullscreen como
+   el overlay de arriba), y solo se anima `transform`/`opacity`, nunca
+   `clip-path` — así el efecto de cortina bajando se ve igual de bien sin
+   forzar repintado de pantalla completa. */
+.cert-lightbox--open .cert-lightbox__stage {
+  animation: cert-lightbox-stage-reveal 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes cert-lightbox-stage-reveal {
+  from {
+    transform: scaleY(0.05);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* Cada tarjeta: SIN transición propia, a propósito — la posición/opacidad/
+   filtro las escribe el <script> directo por frame (rAF con física de
+   velocidad+fricción, portado 1:1 del HoloLightbox real de AzanoLabs). Una
+   transición CSS acá pelearía contra esos valores y se vería con lag.
+   `preserve-3d` para que el tilt de :hover de abajo (en cardInner) se
+   renderice en el espacio 3D propio de la tarjeta. Sin top/left: se centra
+   solo por el `justify-content:center` del stage (ver arriba), el <script>
+   solo le suma `translateX` desde ahí. */
+.cert-lightbox__card {
+  position: absolute;
+  background: none;
+  border: none;
+  padding: 0;
+  outline: none;
+  transform-style: preserve-3d;
+  pointer-events: auto;
+}
+
+/* `width` SÍ lo escribe el <script> cada frame (interpolado junto con la
+   posición): una transición CSS sobre `width` quedaría siempre ~100ms
+   atrasada respecto al resto del movimiento, desalineando el borde de la
+   imagen. Por eso acá la única transición es `transform`, y es SOLO para el
+   tilt de :hover (que el <script> nunca toca). */
+.cert-lightbox__card-inner {
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 200ms ease;
+}
+
+/* Tilt al pasar el cursor sobre una tarjeta lateral: se inclina un poco MÁS
+   hacia el espectador (compone con el rotateY que ya le puso el <script>).
+   `--left`/`--right` los alterna el <script> según de qué lado del centro
+   está cada tarjeta en cada frame (no son roles fijos, son continuos). */
+.cert-lightbox__card--left:hover .cert-lightbox__card-inner {
+  transform: rotateY(-22deg) translateZ(22px);
+}
+
+.cert-lightbox__card--right:hover .cert-lightbox__card-inner {
+  transform: rotateY(22deg) translateZ(22px);
+}
+
+.cert-lightbox__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 66vh;
+  object-fit: contain;
+  user-select: none;
+}
+
+.cert-lightbox__holo-border {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 1px solid color-mix(in srgb, var(--lightblue) 35%, transparent);
+}
+
+.cert-lightbox__card--active .cert-lightbox__holo-border {
+  border-color: color-mix(in srgb, var(--lightblue) 60%, transparent);
+  box-shadow: inset 0 0 20px color-mix(in srgb, var(--lightblue) 8%, transparent);
+}
+
+/* Mobile chico: sin espacio para mostrar los vecinos angulados, se oculta
+   todo menos la tarjeta activa (la navegación sigue funcionando con
+   swipe/rueda/flechas, solo cambia lo que se ve en pantalla). */
+@media (max-width: 440px) {
+  .cert-lightbox__card:not(.cert-lightbox__card--active) {
+    display: none;
+  }
+
+  .cert-lightbox__card--active .cert-lightbox__card-inner {
+    width: 92vw !important;
+  }
+
+  .cert-lightbox__stage {
+    height: auto;
+    min-height: 200px;
+  }
+}
+
+/* ── Puntos indicadores (reemplaza el contador de texto) ─────────── */
+.cert-lightbox__dots {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.cert-lightbox__dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--lightblue) 25%, transparent);
+  transition: background-color 300ms ease, transform 300ms ease, box-shadow 300ms ease;
+}
+
+.cert-lightbox__dot--active {
+  background: var(--lightblue);
+  transform: scale(1.4);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--lightblue) 60%, transparent);
+}
+
+@media (min-width: 440px) {
+  .cert-tile {
+    width: 14rem;
+    height: 8.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .certifications-section {
+    transition: none;
+    opacity: 1;
+  }
+
+  .cert-tile__border,
+  .cert-tile__glint {
+    animation: none;
+  }
+
+  .cert-lightbox--open,
+  .cert-lightbox--closing {
+    animation: none;
+  }
+
+  .cert-lightbox--open .cert-lightbox__stage {
+    animation: none;
+  }
+
+  .cert-lightbox__card-inner {
+    transition: none;
+  }
+
+  .cert-skeleton::after {
+    animation: none;
+  }
+
+  .cert-skeleton {
+    transition: none;
+  }
+}

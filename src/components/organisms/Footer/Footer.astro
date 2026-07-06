@@ -1,0 +1,51 @@
+---
+import '@/components/organisms/Footer/Footer.css'
+import type { Translations } from '@/i18n'
+
+interface Props {
+    t: Translations
+}
+
+const { t } = Astro.props
+---
+
+<footer class="site-footer">
+    <a class="site-footer__signature" href="https://azanorivers.com/" target="_blank" rel="noopener noreferrer">
+        <span data-i18n="footer.createdByPrefix">{t.footer.createdByPrefix}</span>
+        <span class="site-footer__glitch" data-glitch-text="AzanoRivers">AzanoRivers</span>
+    </a>
+</footer>
+
+<script>
+    const footer = document.querySelector('.site-footer')
+
+    if (footer) {
+        let isIntersecting = false
+        let orchestrationDone = !document.documentElement.classList.contains('is-loading')
+
+        const tryReveal = () => {
+            if (!isIntersecting || !orchestrationDone) return
+            footer.classList.add('site-footer--visible')
+            observer.disconnect()
+            document.removeEventListener('scroll-unlocked', onOrchestrationDone)
+        }
+
+        const onOrchestrationDone = () => {
+            orchestrationDone = true
+            tryReveal()
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) {
+                    isIntersecting = true
+                    tryReveal()
+                }
+            },
+            { threshold: 0.1 },
+        )
+
+        observer.observe(footer)
+        if (!orchestrationDone) document.addEventListener('scroll-unlocked', onOrchestrationDone)
+    }
+</script>

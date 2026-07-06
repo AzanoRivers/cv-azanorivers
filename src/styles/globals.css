@@ -1,0 +1,205 @@
+@import 'tailwindcss';
+@import './fonts.css';
+
+/* Paleta y colores de texto tomados de azanorivers-web (src/styles/global.css):
+   mismo fondo azul, mismo rosa/blanco/azul claro de texto. */
+:root {
+  --background: rgba(26, 76, 121, 1);
+  --foreground: rgba(255, 255, 255, 0.9);
+  --az-grid-bg:   rgba(26, 76, 121, 1);
+  --az-grid-line: rgba(0, 194, 255, 0.2);
+  --az-grid-line-bg: rgba(0, 194, 255, 0.08);
+  --darkpink:  rgba(255, 114, 255, 1);
+  --white-90:  rgba(255, 255, 255, 0.9);
+  --white-70:  rgba(255, 255, 255, 0.7);
+  --lightblue: rgba(0, 194, 255, 1);
+  --green:     rgba(94, 222, 140, 1);
+}
+
+@theme {
+  --color-background:   var(--background);
+  --color-foreground:   var(--foreground);
+  --color-az-grid-bg:   var(--az-grid-bg);
+  --color-az-grid-line: var(--az-grid-line);
+  --color-az-grid-line-bg: var(--az-grid-line-bg);
+  --color-darkpink:  var(--darkpink);
+  --color-white-90:  var(--white-90);
+  --color-white-70:  var(--white-70);
+  --color-lightblue: var(--lightblue);
+  --color-green:     var(--green);
+  --font-encode: 'Encode Sans SC', sans-serif;
+  --font-plex:   'IBM Plex Mono', monospace;
+  --font-source: 'Source Code Pro', monospace;
+  --font-inter:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --breakpoint-sm: 16.875rem;
+  --breakpoint-md: 22.5rem;
+  --breakpoint-lg: 27.5rem;
+  --breakpoint-xl: 37.5rem;
+  --breakpoint-2xl: 75rem;
+}
+
+@layer base {
+  /* Reserva el carril del scrollbar SIEMPRE (cargando o no): si en vez de esto
+     se alternara `overflow` entre hidden/auto al liberar el scroll, el ancho
+     disponible cambia justo en ese instante y el contenido se corre de golpe
+     (la barra nativa entra a ocupar su espacio). Con `scroll` fijo el carril
+     nunca aparece ni desaparece, así que no hay empujón que suavizar. */
+  html {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+  }
+
+  /* Bloquea el scroll mientras dura la orquestación de carga inicial (BootIntro
+     -> NavDock -> Banner -> LanguageSelector). `position: fixed` en vez de solo
+     `overflow: hidden` en el body: en iOS Safari `overflow: hidden` sigue
+     dejando pasar el rubber-band scroll, position: fixed sí lo bloquea del
+     todo. Como el scroll siempre arranca en 0 (ver el script inline en
+     BaseLayout), no hace falta compensar ningún offset al liberarlo. No se
+     toca el `overflow` del html acá: así el carril de arriba no se
+     desactiva mientras carga, y no cambia nada al liberar el scroll. */
+  html.is-loading body {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* Mismo bloqueo, para modales que se abren en cualquier punto de la
+     página (no siempre en scroll 0, a diferencia del de arriba): el <script>
+     que agrega esta clase también fija `body.style.top` a `-scrollY` para
+     que no salte a la parte de arriba, y lo restaura al sacarla. */
+  html.scroll-locked body {
+    position: fixed;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-source);
+    scrollbar-width: thin;
+    scrollbar-color: var(--lightblue) transparent;
+  }
+
+  /* Migrado de azanorivers-web (.scrollbar/.scrollbarchat en global.css):
+     mismo scroll celeste redondeado, con los tokens de esta línea gráfica. */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: color-mix(in srgb, var(--lightblue) 15%, transparent);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--lightblue) 65%, var(--background) 35%);
+    border: 1px solid var(--lightblue);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--lightblue);
+  }
+}
+
+@layer components {
+  /* Grid calibrado para llegar a 25px (tamaño real de AzanoRivers) recién
+     en el breakpoint 440px+, con pasos más chicos abajo para mobile. */
+  .bg-az-grid {
+    background-color: var(--az-grid-bg);
+    background-image:
+      linear-gradient(var(--az-grid-line-bg) 1px, transparent 1px),
+      linear-gradient(90deg, var(--az-grid-line-bg) 1px, transparent 1px);
+    background-size: 15px 15px;
+  }
+
+  /* Roles tipográficos: Encode Sans SC para títulos/subtítulos, Inter para
+     cuerpo/muted (mejor lectura en párrafos largos), Source Code Pro se
+     mantiene solo en la cursiva de énfasis. Tamaños base (mobile); escalan
+     en los media queries de abajo hasta 2xl. */
+  .text-title {
+    font-family: var(--font-encode);
+    font-weight: 700;
+    color: var(--color-darkpink);
+    font-size: 1.125rem;
+    line-height: 1.25;
+  }
+
+  .text-subtitle {
+    font-family: var(--font-encode);
+    font-weight: 600;
+    color: var(--color-white-90);
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .text-body {
+    font-family: var(--font-inter);
+    font-weight: 400;
+    color: var(--color-white-90);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .text-muted {
+    font-family: var(--font-inter);
+    font-weight: 400;
+    color: var(--color-white-70);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+  }
+
+  .text-emphasis {
+    font-family: var(--font-source);
+    font-style: italic;
+    color: var(--color-white-70);
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+}
+
+@media (min-width: 360px) {
+  .bg-az-grid    { background-size: 20px 20px; }
+  .text-title    { font-size: 1.25rem; }
+  .text-subtitle { font-size: 1.125rem; }
+  .text-body     { font-size: 0.9375rem; }
+  .text-muted    { font-size: 0.875rem; }
+  .text-emphasis { font-size: 0.8125rem; }
+}
+
+@media (min-width: 440px) {
+  .bg-az-grid    { background-size: 25px 25px; }
+  .text-title    { font-size: 1.5rem; }
+  .text-subtitle { font-size: 1.25rem; }
+  .text-body     { font-size: 1rem; }
+  .text-muted    { font-size: 0.9375rem; }
+  .text-emphasis { font-size: 0.875rem; }
+}
+
+@media (min-width: 600px) {
+  .text-title    { font-size: 1.875rem; }
+  .text-subtitle { font-size: 1.5rem; }
+  .text-body     { font-size: 1.0625rem; }
+  .text-muted    { font-size: 1rem; }
+  .text-emphasis { font-size: 0.9375rem; }
+}
+
+@media (min-width: 1200px) {
+  .text-title    { font-size: 2.5rem; }
+  .text-subtitle { font-size: 1.875rem; }
+  .text-body     { font-size: 1.125rem; }
+  .text-muted    { font-size: 1.0625rem; }
+  .text-emphasis { font-size: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

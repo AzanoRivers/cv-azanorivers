@@ -1,0 +1,67 @@
+---
+import '@/components/molecules/ExperienceCard/ExperienceCard.css'
+import { Badge } from '@/components/atoms'
+
+interface Props {
+    company: string
+    companyI18nKey: string
+    role: string
+    roleI18nKey: string
+    dateStart: number
+    dateEnd: number | null
+    presentLabel: string
+    presentI18nKey: string
+    responsibilityOne: string
+    responsibilityOneI18nKey: string
+    responsibilityTwo: string
+    responsibilityTwoI18nKey: string
+    badgeOne: string
+    badgeOneI18nKey: string
+    badgeTwo: string
+    badgeTwoI18nKey: string
+    badgeThree?: string
+    badgeThreeI18nKey?: string
+}
+
+const {
+    company,
+    companyI18nKey,
+    role,
+    roleI18nKey,
+    dateStart,
+    dateEnd,
+    presentLabel,
+    presentI18nKey,
+    responsibilityOne,
+    responsibilityOneI18nKey,
+    responsibilityTwo,
+    responsibilityTwoI18nKey,
+    badgeOne,
+    badgeOneI18nKey,
+    badgeTwo,
+    badgeTwoI18nKey,
+    badgeThree,
+    badgeThreeI18nKey,
+} = Astro.props
+---
+
+<article class="experience-card">
+    <p class="experience-card__dates">
+        <span>{dateStart}</span> — {dateEnd === null ? (
+            <span data-i18n={presentI18nKey}>{presentLabel}</span>
+        ) : (
+            <span>{dateEnd}</span>
+        )}
+    </p>
+    <h3 class="experience-card__company" data-i18n={companyI18nKey}>{company}</h3>
+    <p class="experience-card__role" data-i18n={roleI18nKey}>{role}</p>
+    <ul class="experience-card__responsibilities text-muted">
+        <li data-i18n={responsibilityOneI18nKey}>{responsibilityOne}</li>
+        <li data-i18n={responsibilityTwoI18nKey}>{responsibilityTwo}</li>
+    </ul>
+    <div class="experience-card__badges">
+        <Badge label={badgeOne} i18nKey={badgeOneI18nKey} />
+        <Badge label={badgeTwo} i18nKey={badgeTwoI18nKey} />
+        {badgeThree && <Badge label={badgeThree} i18nKey={badgeThreeI18nKey} />}
+    </div>
+</article>
