@@ -1,0 +1,409 @@
+/* Paleta de impresión: mismo acento rosa/celeste del sitio, pero sobre fondo
+   blanco (no el azul de --background) para que imprima bien y se lea como un
+   CV, no como una captura de pantalla. El azul del sitio se reusa como color
+   de TEXTO principal (buen contraste sobre blanco), no como fondo.
+
+   Maquetación revisada según buenas prácticas reales de CV (columna
+   principal = experiencia narrativa, columna lateral = listas de skills
+   puras; orden cronológico inverso ya resuelto en el .astro; tipografía un
+   poco más grande que la primera pasada, priorizando legibilidad sobre
+   forzar que TODO quepa en una sola hoja a costillas de la letra). */
+:root {
+  --ink: #14335a;
+  --ink-soft: #4a5f7a;
+  --pink: #d6379b;
+  --blue: #0090c2;
+  /* Verde más oscuro/saturado que el --green pastel del sitio (pensado para
+     fondo oscuro): sobre blanco necesita más contraste para leerse bien. */
+  --green: #1a8a4d;
+  /* Cuadriculado: antes era un azul muy oscuro/apagado que casi no se leía
+     como "azul". Ahora usa el mismo celeste de acento del sitio
+     (--lightblue), bien clarito. */
+  --line: rgba(0, 148, 199, 0.055);
+}
+
+@page {
+  size: A4;
+  margin: 11mm 13mm;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 9mm 9mm;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Hojitas decorativas: mismo path/venas que FloatingLeaves del sitio,
+   pero estáticas (sin animación, es un PDF) y a distintos ángulos/tamaños
+   fijos, salpicadas por las esquinas y márgenes para no pisar el texto. */
+.cv-leaves {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cv-leaf {
+  position: absolute;
+  color: var(--pink);
+  opacity: 0.16;
+}
+
+.cv-leaf__body {
+  fill: currentColor;
+}
+
+.cv-leaf__vein {
+  fill: none;
+  stroke: color-mix(in srgb, currentColor 65%, black 35%);
+  stroke-width: 0.6;
+  stroke-linecap: round;
+}
+
+.cv-leaf:nth-child(1) {
+  top: 4mm;
+  left: 6mm;
+  width: 16mm;
+  height: 16mm;
+  transform: rotate(-18deg);
+  opacity: 0.13;
+}
+.cv-leaf:nth-child(2) {
+  top: 14mm;
+  left: 22mm;
+  width: 8mm;
+  height: 8mm;
+  transform: rotate(34deg);
+  opacity: 0.16;
+}
+.cv-leaf:nth-child(3) {
+  top: 2mm;
+  right: 10mm;
+  width: 20mm;
+  height: 20mm;
+  transform: rotate(58deg);
+  opacity: 0.11;
+}
+.cv-leaf:nth-child(4) {
+  top: 22mm;
+  right: 4mm;
+  width: 10mm;
+  height: 10mm;
+  transform: rotate(-42deg);
+  opacity: 0.15;
+}
+.cv-leaf:nth-child(5) {
+  top: 120mm;
+  left: 2mm;
+  width: 14mm;
+  height: 14mm;
+  transform: rotate(72deg);
+  opacity: 0.12;
+}
+.cv-leaf:nth-child(6) {
+  top: 155mm;
+  left: 10mm;
+  width: 7mm;
+  height: 7mm;
+  transform: rotate(-25deg);
+  opacity: 0.18;
+}
+.cv-leaf:nth-child(7) {
+  bottom: 8mm;
+  left: 30mm;
+  width: 18mm;
+  height: 18mm;
+  transform: rotate(15deg);
+  opacity: 0.09;
+}
+.cv-leaf:nth-child(8) {
+  bottom: 30mm;
+  right: 6mm;
+  width: 22mm;
+  height: 22mm;
+  transform: rotate(-64deg);
+  opacity: 0.1;
+}
+.cv-leaf:nth-child(9) {
+  bottom: 6mm;
+  right: 40mm;
+  width: 9mm;
+  height: 9mm;
+  transform: rotate(48deg);
+  opacity: 0.17;
+}
+.cv-leaf:nth-child(10) {
+  top: 90mm;
+  right: 2mm;
+  width: 12mm;
+  height: 12mm;
+  transform: rotate(-8deg);
+  opacity: 0.13;
+}
+
+/* ── Página ── */
+.cv-page {
+  position: relative;
+  z-index: 1;
+}
+
+.cv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 6mm;
+  padding-bottom: 3mm;
+  border-bottom: 1.5px solid var(--pink);
+}
+
+.cv-name {
+  margin: 0;
+  font-family: 'Encode Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: 22pt;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.cv-handle {
+  margin: 1mm 0 0;
+  font-family: 'Encode Sans SC', sans-serif;
+  font-weight: 600;
+  font-size: 11.5pt;
+  color: var(--pink);
+}
+
+.cv-tagline {
+  margin: 1.5mm 0 0;
+  font-size: 9.5pt;
+  color: var(--ink-soft);
+}
+
+.cv-tagline__highlight {
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* Una sola línea de contacto, no 4 apiladas repitiendo el mismo handle:
+   más escaneable y menos ruido visual (mismo criterio que "clean lines,
+   uncluttered" de cualquier guía de CV). */
+.cv-header__contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1mm;
+  font-family: 'IBM Plex Mono', monospace;
+  white-space: nowrap;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.cv-header__site {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 10pt;
+  text-decoration: none;
+}
+
+.cv-header__handle {
+  font-size: 7.8pt;
+  color: var(--ink-soft);
+}
+
+/* Hipervínculos reales (Chrome los conserva como anotaciones clicables al
+   exportar a PDF): mismo color que el texto normal, subrayado sutil punteado
+   para que se note que son clicables sin gritar "LINK" en un CV. */
+.cv-header__link,
+.cv-footer__link {
+  color: var(--blue);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 1pt;
+}
+
+.cv-description {
+  margin: 3.5mm 0 0;
+  font-size: 9.3pt;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 150mm;
+}
+
+.cv-body {
+  display: grid;
+  grid-template-columns: 1.65fr 1fr;
+  gap: 9mm;
+  margin-top: 5mm;
+}
+
+/* Pequeño cuadrado de acento antes del título: un recurso típico de CV
+   profesional para separar secciones sin depender solo de una línea. */
+.cv-section-title {
+  display: flex;
+  align-items: center;
+  gap: 1.8mm;
+  margin: 0 0 2.6mm;
+  font-family: 'Encode Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: 10.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  padding-bottom: 1.2mm;
+  border-bottom: 1px solid var(--line);
+}
+
+.cv-section-title::before {
+  content: '';
+  display: block;
+  width: 2.4mm;
+  height: 2.4mm;
+  background: var(--pink);
+  flex-shrink: 0;
+}
+
+.cv-col--side section + section {
+  margin-top: 5mm;
+}
+
+/* ── Experiencia: acento lateral rosa para marcar cada bloque, igual que el
+   "node" celeste/rosa de la línea de tiempo del sitio, sin copiar la
+   animación (es print, no hace falta). Da un punto de anclaje visual claro
+   por entrada, algo que en la primera versión (solo texto apilado) faltaba. */
+.cv-experience {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3.4mm;
+}
+
+.cv-experience__item {
+  break-inside: avoid;
+  padding-left: 3mm;
+  border-left: 1.5px solid var(--line);
+}
+
+.cv-experience__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 3mm;
+}
+
+.cv-experience__company {
+  font-family: 'Encode Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: 10.5pt;
+  color: var(--ink);
+}
+
+.cv-experience__dates {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8pt;
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+.cv-experience__role {
+  margin: 0.4mm 0 1mm;
+  font-size: 8.8pt;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.cv-experience__responsibilities {
+  margin: 0;
+  padding-left: 3.5mm;
+  font-size: 8.4pt;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.cv-experience__responsibilities li + li {
+  margin-top: 0.5mm;
+}
+
+/* ── Chips (badges) ── */
+.cv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4mm;
+  margin-top: 1.4mm;
+}
+
+.cv-chip {
+  display: inline-flex;
+  padding: 0.6mm 2.2mm;
+  border: 0.75px solid var(--pink);
+  border-radius: 999px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7.2pt;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.cv-chip--tech {
+  border-color: var(--blue);
+}
+
+/* ── Stack tecnológico ── */
+.cv-tech-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4mm;
+}
+
+.cv-tech-group__title {
+  margin: 0 0 1mm;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 8.2pt;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ── Formación ── */
+.cv-education {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.4mm;
+  font-size: 8.1pt;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.cv-education__item strong {
+  color: var(--ink);
+  font-family: 'Encode Sans SC', sans-serif;
+  font-weight: 600;
+}
+
+.cv-footer {
+  margin-top: 6mm;
+  padding-top: 2.2mm;
+  border-top: 1px solid var(--line);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7.2pt;
+  color: var(--ink-soft);
+  text-align: center;
+}

@@ -213,6 +213,7 @@
   color: var(--white-90);
   font-family: var(--font-plex);
   font-size: 0.8125rem;
+  -webkit-user-select: all;
   user-select: all;
 }
 

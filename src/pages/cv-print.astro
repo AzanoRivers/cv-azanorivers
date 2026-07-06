@@ -1,0 +1,168 @@
+---
+// Página utilitaria SOLO para generar el PDF descargable (público/cv-andres-rivera.pdf)
+// vía headless Chrome apuntando acá. No está en el <NavDock>, no se linkea desde
+// ningún lado del sitio: es un molde de impresión, no una ruta real del CV online.
+import '@/styles/fonts.css'
+import '@/pages/cv-print.css'
+import { getDictionary } from '@/i18n'
+
+const t = getDictionary('es')
+const LEAF_PATH = 'M12 2C6 8 4 14 12 22C20 14 18 8 12 2Z'
+const VEIN_PATHS = [
+    'M12 4C12 9 12 15 12 20',
+    'M12 8C10.5 8.6 9.3 9.8 8.3 11.3',
+    'M12 8C13.5 8.6 14.7 9.8 15.7 11.3',
+    'M12 13C10.3 13.7 9 15 8 16.8',
+    'M12 13C13.7 13.7 15 15 16 16.8',
+]
+
+// Orden cronológico INVERSO (lo más reciente primero): es la convención
+// estándar de cualquier CV, y le da más protagonismo/espacio a los roles
+// más relevantes en vez de enterrarlos al final. Los más viejos (`compact:
+// true`) se muestran con 1 sola responsabilidad en vez de 2, ya que en un
+// CV de una hoja el detalle debe concentrarse en lo más reciente.
+const experience = [
+    { key: 'codelabs', dateStart: 2022, dateEnd: null, job: t.experience.jobs.codelabs, compact: false },
+    { key: 'freelance', dateStart: 2020, dateEnd: null, job: t.experience.jobs.freelance, compact: false },
+    { key: 'perspectivaK', dateStart: 2021, dateEnd: 2022, job: t.experience.jobs.perspectivaK, compact: false },
+    { key: 'bbva', dateStart: 2017, dateEnd: 2020, job: t.experience.jobs.bbva, compact: false },
+    { key: 'sic', dateStart: 2016, dateEnd: 2017, job: t.experience.jobs.sic, compact: true },
+    { key: 'avancys', dateStart: 2015, dateEnd: 2016, job: t.experience.jobs.avancys, compact: true },
+    { key: 'ximil', dateStart: 2009, dateEnd: 2010, job: t.experience.jobs.ximil, compact: true },
+]
+
+const techGroups = [
+    { title: t.techStack.groups.frontend.title, items: ['JavaScript', 'React', 'Astro', 'Vue', 'Tailwind CSS', 'Figma'] },
+    { title: t.techStack.groups.backend.title, items: ['Node.js', 'Express', 'Next.js', 'Nest.js', 'Python', 'Docker'] },
+    { title: t.techStack.groups.db.title, items: ['PostgreSQL', 'MongoDB', 'Redis', 'MySQL', 'SQLite'] },
+    { title: t.techStack.groups.mobile.title, items: ['React Native', 'Expo'] },
+    { title: t.techStack.groups.gaming.title, items: ['Godot Engine', 'Phaser.js'] },
+    { title: t.techStack.groups.iot.title, items: ['C / C++', 'MicroPython', 'Arduino', 'LoRa'] },
+]
+
+const education = [
+    { title: t.education.university.title, description: t.education.university.description },
+    { title: t.education.selfTaught.title, description: t.education.selfTaught.description },
+    { title: t.education.virtualLearning.title, description: t.education.virtualLearning.description },
+    { title: t.education.botany.title, description: t.education.botany.description },
+]
+
+// Un solo handle para las 4 redes: listarlas una por línea era ruido
+// redundante (misma info repetida 4 veces). Una sola línea escaneable, pero
+// cada nombre es su propio hipervínculo real (Chrome preserva los <a href>
+// como anotaciones clicables al exportar a PDF).
+const SITE_URL = 'https://azanorivers.com'
+const socialPlatforms = [
+    { label: 'GitHub', href: 'https://github.com/azanorivers' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/azanorivers' },
+    { label: 'X', href: 'https://twitter.com/azanorivers' },
+    { label: 'Instagram', href: 'https://www.instagram.com/azanorivers' },
+]
+---
+
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="robots" content="noindex, nofollow" />
+        <title>CV — Andrés F. Rivera</title>
+    </head>
+    <body>
+        <div class="cv-leaves" aria-hidden="true">
+            {Array.from({ length: 10 }).map(() => (
+                <svg class="cv-leaf" viewBox="0 0 24 24">
+                    <path class="cv-leaf__body" d={LEAF_PATH} />
+                    {VEIN_PATHS.map((d) => (
+                        <path class="cv-leaf__vein" d={d} />
+                    ))}
+                </svg>
+            ))}
+        </div>
+
+        <main class="cv-page">
+            <header class="cv-header">
+                <div class="cv-header__id">
+                    <h1 class="cv-name">{t.banner.name}</h1>
+                    <p class="cv-handle">{t.banner.handle}</p>
+                    <p class="cv-tagline">
+                        {t.banner.taglinePrefix}<span class="cv-tagline__highlight">{t.banner.taglineHighlight}</span>{t.banner.taglineSuffix}
+                    </p>
+                </div>
+                <div class="cv-header__contact">
+                    <a class="cv-header__site" href={SITE_URL}>azanorivers.com</a>
+                    <span class="cv-header__handle">
+                        @azanorivers —{' '}
+                        {socialPlatforms.map((s, i) => (
+                            <>
+                                {i > 0 && ' · '}
+                                <a class="cv-header__link" href={s.href}>{s.label}</a>
+                            </>
+                        ))}
+                    </span>
+                </div>
+            </header>
+
+            <p class="cv-description">{t.banner.description}</p>
+
+            <div class="cv-body">
+                <section class="cv-col cv-col--main">
+                    <h2 class="cv-section-title">{t.experience.subtitle}</h2>
+                    <ul class="cv-experience">
+                        {experience.map(({ dateStart, dateEnd, job, compact }) => (
+                            <li class="cv-experience__item">
+                                <div class="cv-experience__head">
+                                    <span class="cv-experience__company">{job.company}</span>
+                                    <span class="cv-experience__dates">
+                                        {dateStart} – {dateEnd ?? t.experience.presentLabel}
+                                    </span>
+                                </div>
+                                <p class="cv-experience__role">{job.role}</p>
+                                <ul class="cv-experience__responsibilities">
+                                    <li>{job.responsibilityOne}</li>
+                                    {!compact && <li>{job.responsibilityTwo}</li>}
+                                </ul>
+                                <div class="cv-chips">
+                                    <span class="cv-chip">{job.badgeOne}</span>
+                                    <span class="cv-chip">{job.badgeTwo}</span>
+                                    {job.badgeThree && <span class="cv-chip">{job.badgeThree}</span>}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+
+                <aside class="cv-col cv-col--side">
+                    <section>
+                        <h2 class="cv-section-title">{t.techStack.subtitle}</h2>
+                        <div class="cv-tech-groups">
+                            {techGroups.map((group) => (
+                                <div class="cv-tech-group">
+                                    <h3 class="cv-tech-group__title">{group.title}</h3>
+                                    <div class="cv-chips">
+                                        {group.items.map((item) => (
+                                            <span class="cv-chip cv-chip--tech">{item}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 class="cv-section-title">{t.education.title}</h2>
+                        <ul class="cv-education">
+                            {education.map((item) => (
+                                <li class="cv-education__item">
+                                    <strong>{item.title}.</strong> {item.description}
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                </aside>
+            </div>
+
+            <footer class="cv-footer">
+                {t.footer.createdByPrefix} AzanoRivers · <a class="cv-footer__link" href={SITE_URL}>azanorivers.com</a>
+            </footer>
+        </main>
+    </body>
+</html>

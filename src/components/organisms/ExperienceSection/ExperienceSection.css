@@ -364,6 +364,7 @@
 
 .experience-timeline__scroll--dragging {
   cursor: grabbing;
+  -webkit-user-select: none;
   user-select: none;
 }
 

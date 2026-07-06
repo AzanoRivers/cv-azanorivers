@@ -94,6 +94,7 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  -webkit-clip-path: inset(0 0 0 0);
   clip-path: inset(0 0 0 0);
   z-index: -1;
   will-change: transform, clip-path;
@@ -116,6 +117,7 @@
    `text-shadow` corrido ya da la aberración cromática sin mover nada. */
 @media (max-width: 1199px) {
   .site-footer__glitch::before {
+    -webkit-clip-path: none;
     clip-path: none;
     transform: none;
     animation: site-footer-glitch-mobile-a 4s infinite;
@@ -123,6 +125,7 @@
   }
 
   .site-footer__glitch::after {
+    -webkit-clip-path: none;
     clip-path: none;
     transform: none;
     animation: site-footer-glitch-mobile-b 3.2s infinite;
@@ -177,48 +180,64 @@
   }
 }
 
+/* Nota iOS Safari: `-webkit-clip-path` en cada paso, no solo en la regla
+   base — Safari < 16 puede ignorar el `clip-path` sin prefijo dentro de un
+   @keyframes aunque sí soporte la propiedad estática prefijada. Solo corre
+   en desktop real (ver el override de arriba para <1200px), pero un iPad
+   apaisado sí puede caer en este breakpoint siendo WebKit/Safari. */
 @keyframes site-footer-glitch-shift {
   0% {
+    -webkit-clip-path: inset(42% 0 56% 0);
     clip-path: inset(42% 0 56% 0);
     transform: translate3d(0, 0, 0) skew(0.3deg);
   }
   10% {
+    -webkit-clip-path: inset(12% 0 41% 0);
     clip-path: inset(12% 0 41% 0);
     transform: translate3d(-1px, 0, 0) skew(0.5deg);
   }
   20% {
+    -webkit-clip-path: inset(63% 0 37% 0);
     clip-path: inset(63% 0 37% 0);
     transform: translate3d(1px, 0, 0) skew(0.4deg);
   }
   30% {
+    -webkit-clip-path: inset(86% 0 14% 0);
     clip-path: inset(86% 0 14% 0);
     transform: translate3d(0, 0, 0) skew(0.3deg);
   }
   40% {
+    -webkit-clip-path: inset(26% 0 40% 0);
     clip-path: inset(26% 0 40% 0);
     transform: translate3d(-1px, 0, 0) skew(0.2deg);
   }
   50% {
+    -webkit-clip-path: inset(76% 0 24% 0);
     clip-path: inset(76% 0 24% 0);
     transform: translate3d(1px, 0, 0) skew(0.1deg);
   }
   60% {
+    -webkit-clip-path: inset(68% 0 32% 0);
     clip-path: inset(68% 0 32% 0);
     transform: translate3d(0, 0, 0) skew(0.5deg);
   }
   70% {
+    -webkit-clip-path: inset(82% 0 18% 0);
     clip-path: inset(82% 0 18% 0);
     transform: translate3d(-1px, 0, 0) skew(0.4deg);
   }
   80% {
+    -webkit-clip-path: inset(54% 0 40% 0);
     clip-path: inset(54% 0 40% 0);
     transform: translate3d(1px, 0, 0) skew(0.3deg);
   }
   90% {
+    -webkit-clip-path: inset(60% 0 15% 0);
     clip-path: inset(60% 0 15% 0);
     transform: translate3d(0, 0, 0) skew(0.2deg);
   }
   100% {
+    -webkit-clip-path: inset(67% 0 33% 0);
     clip-path: inset(67% 0 33% 0);
     transform: translate3d(0, 0, 0) skew(0.1deg);
   }
@@ -226,46 +245,57 @@
 
 @keyframes site-footer-glitch-shift-alt {
   0% {
+    -webkit-clip-path: inset(65% 0 0 0);
     clip-path: inset(65% 0 0 0);
     transform: translate3d(0, 0, 0) skew(0.4deg);
   }
   10% {
+    -webkit-clip-path: inset(79% 0 21% 0);
     clip-path: inset(79% 0 21% 0);
     transform: translate3d(1px, 0, 0) skew(0.6deg);
   }
   20% {
+    -webkit-clip-path: inset(90% 0 10% 0);
     clip-path: inset(90% 0 10% 0);
     transform: translate3d(-1px, 0, 0) skew(0.5deg);
   }
   30% {
+    -webkit-clip-path: inset(71% 0 0 0);
     clip-path: inset(71% 0 0 0);
     transform: translate3d(0, 0, 0) skew(0.4deg);
   }
   40% {
+    -webkit-clip-path: inset(56% 0 23% 0);
     clip-path: inset(56% 0 23% 0);
     transform: translate3d(1px, 0, 0) skew(0.3deg);
   }
   50% {
+    -webkit-clip-path: inset(36% 0 6% 0);
     clip-path: inset(36% 0 6% 0);
     transform: translate3d(-1px, 0, 0) skew(0.2deg);
   }
   60% {
+    -webkit-clip-path: inset(18% 0 28% 0);
     clip-path: inset(18% 0 28% 0);
     transform: translate3d(0, 0, 0) skew(0.6deg);
   }
   70% {
+    -webkit-clip-path: inset(45% 0 14% 0);
     clip-path: inset(45% 0 14% 0);
     transform: translate3d(1px, 0, 0) skew(0.5deg);
   }
   80% {
+    -webkit-clip-path: inset(33% 0 31% 0);
     clip-path: inset(33% 0 31% 0);
     transform: translate3d(-1px, 0, 0) skew(0.4deg);
   }
   90% {
+    -webkit-clip-path: inset(21% 0 56% 0);
     clip-path: inset(21% 0 56% 0);
     transform: translate3d(0, 0, 0) skew(0.3deg);
   }
   100% {
+    -webkit-clip-path: inset(84% 0 16% 0);
     clip-path: inset(84% 0 16% 0);
     transform: translate3d(0, 0, 0) skew(0.2deg);
   }

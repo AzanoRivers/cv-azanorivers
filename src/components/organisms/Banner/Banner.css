@@ -334,6 +334,7 @@
 
 /* Este no es un botón: solo texto con ícono, sin borde ni fondo. */
 .banner__download {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -349,6 +350,85 @@
 .banner__download:focus-visible {
   color: var(--lightblue);
   outline: none;
+}
+
+/* Ancho fijo mínimo para que el botón no "salte" de tamaño al cambiar entre
+   "Descargar CV" y "Espere...". */
+.banner__download-label {
+  display: inline-block;
+  min-width: 5.5rem;
+}
+
+/* Mismo criterio que el "¡Clap!" de AboutSection: texto flotante que aparece
+   con un pop y se desvanece, en una de 8 posiciones fijas precalculadas
+   alrededor del botón (nada de inline styles/posiciones calculadas por JS). */
+.banner__download-yay {
+  position: absolute;
+  font-family: var(--font-encode);
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--green);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: banner-download-yay-pop 900ms ease-out forwards;
+}
+
+@keyframes banner-download-yay-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  45% {
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.banner__download-yay--pos-0 {
+  top: -1.75rem;
+  left: 0.25rem;
+}
+
+.banner__download-yay--pos-1 {
+  top: -1.5rem;
+  left: 3rem;
+}
+
+.banner__download-yay--pos-2 {
+  top: 0;
+  left: 6rem;
+}
+
+.banner__download-yay--pos-3 {
+  top: 1.5rem;
+  left: 5rem;
+}
+
+.banner__download-yay--pos-4 {
+  top: 1.75rem;
+  left: 2rem;
+}
+
+.banner__download-yay--pos-5 {
+  top: 1.5rem;
+  left: -1.5rem;
+}
+
+.banner__download-yay--pos-6 {
+  top: 0;
+  left: -2.5rem;
+}
+
+.banner__download-yay--pos-7 {
+  top: -1.5rem;
+  left: -1.5rem;
 }
 
 @keyframes banner-text-entrance {
@@ -417,6 +497,11 @@
   .banner__scroll-hint-boom,
   .banner__scroll-hint--exploding::before {
     animation: none;
+  }
+
+  .banner__download-yay {
+    animation: none;
+    opacity: 0;
   }
 
   .banner__scroll-hint--exploding .banner__scroll-hint-icon {

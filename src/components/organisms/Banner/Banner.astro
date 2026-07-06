@@ -55,9 +55,13 @@ const { t } = Astro.props
                 <span data-i18n="banner.actions.contact">{t.banner.actions.contact}</span>
                 <Mail className="banner__cta-icon" strokeWidth={1.5} aria-hidden="true" />
             </a>
-            <a class="banner__download" href="/cv-andres-rivera.pdf" download>
+            <a
+                class="banner__download"
+                href="/cv-andres-rivera.pdf"
+                download
+                data-downloading-label={t.banner.actions.downloading}>
                 <Download className="banner__cta-icon" strokeWidth={1.5} aria-hidden="true" />
-                <span data-i18n="banner.actions.downloadCv">{t.banner.actions.downloadCv}</span>
+                <span class="banner__download-label" data-i18n="banner.actions.downloadCv">{t.banner.actions.downloadCv}</span>
             </a>
         </div>
         <button
@@ -109,4 +113,37 @@ const { t } = Astro.props
             )
         })
     }
+
+    // Botón de descargar: el "¡Yay!!!" y el cambio de texto se disparan
+    // ACÁ MISMO, de forma síncrona, antes de que el navegador arranque la
+    // descarga del <a download> — así, aunque la descarga nativa trabe el
+    // hilo principal un par de segundos, la animación (ya es puramente CSS
+    // en este punto) sigue corriendo sola sin depender de que JS siga vivo.
+    const downloadButton = document.querySelector<HTMLAnchorElement>('.banner__download')
+    const downloadLabel = downloadButton?.querySelector<HTMLElement>('.banner__download-label')
+
+    downloadButton?.addEventListener('click', () => {
+        // Mismo criterio que el "¡Clap!" de AboutSection: 8 posiciones fijas
+        // precalculadas (nada de inline styles), una al azar por click, se
+        // pueden acumular varias si se hace click rápido seguido.
+        const yay = document.createElement('span')
+        const position = Math.floor(Math.random() * 8)
+        yay.className = `banner__download-yay banner__download-yay--pos-${position}`
+        yay.textContent = '¡Yay!!!'
+        yay.setAttribute('aria-hidden', 'true')
+        downloadButton.appendChild(yay)
+        setTimeout(() => yay.remove(), 900)
+
+        // El ícono de descarga se queda igual, solo cambia el texto (nunca
+        // sabemos cuándo termina una descarga real de un <a download>, así
+        // que vuelve solo pasado un tiempo prudente, no atado a ningún
+        // evento de "descarga completa" que no existe para este caso).
+        if (downloadLabel) {
+            const originalLabel = downloadLabel.textContent
+            downloadLabel.textContent = downloadButton.dataset.downloadingLabel ?? originalLabel
+            setTimeout(() => {
+                downloadLabel.textContent = originalLabel
+            }, 2500)
+        }
+    })
 </script>

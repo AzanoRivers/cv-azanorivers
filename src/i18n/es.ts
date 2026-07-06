@@ -43,6 +43,7 @@ export const es: Translations = {
       experience: 'Experiencia',
       contact: 'Contáctame',
       downloadCv: 'Descargar CV',
+      downloading: 'Espere...',
     },
     scrollHintLabel: 'Desplázate hacia abajo',
   },

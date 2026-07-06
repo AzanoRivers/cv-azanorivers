@@ -327,18 +327,47 @@ const virtualSlots = Array.from({ length: virtualTotal }, (_, slotIndex) => {
             return ((Math.round(n) % total) + total) % total
         }
 
-        // Aplica transform/opacidad/filtro/z-index a cada tarjeta según su
-        // distancia continua al offset actual. Se llama desde el loop de
-        // rAF: escribe directo sobre el DOM (sin React ni reflow por clase),
-        // así que tolera correr en cada frame durante el arrastre o la
-        // inercia sin trabarse.
+        // "Estacionada": lejos de verdad (no solo invisible) y sin las
+        // clases de rol. Con 84 certificaciones reales, dejar una tarjeta
+        // fuera de rango con `opacity:0` pero SIN transform la deja apilada
+        // en el centro del stage (la posición de reposo del flex). Ahí sigue
+        // contando como "cerca del viewport" para `loading="lazy"`, así que
+        // el navegador termina descargando/decodificando las 84 de golpe
+        // apenas se abre el modal. 300vw la saca de la ecuación de verdad.
+        function parkCard(card: HTMLButtonElement) {
+            card.style.transform = 'translateX(300vw)'
+            card.style.opacity = '0'
+            card.style.pointerEvents = 'none'
+            card.classList.remove('cert-lightbox__card--left', 'cert-lightbox__card--right', 'cert-lightbox__card--active')
+        }
+
+        cards.forEach(parkCard)
+
+        // Qué tarjetas tocó el frame anterior: solo esas necesitan volver a
+        // estacionarse si ya no están en rango. Evita iterar las 84 cada vez.
+        let previousVisible = new Set<number>()
+
+        // Aplica transform/opacidad/filtro/z-index SOLO a las tarjetas que
+        // puedan estar dentro de rango (a<=2.4: como mucho 7 índices
+        // consecutivos alrededor del offset actual, sin importar cuántas
+        // certificaciones reales haya en total). Iterar las 84 en cada frame
+        // del rAF —incluso solo para ponerles opacity:0 una y otra vez— era
+        // el cuello de botella real en mobile: esto lo baja de O(84) a
+        // O(~7) por frame durante el arrastre o la inercia.
         function applyCardTransforms(offset: number, viewportW: number) {
             const isSmall = viewportW < 1280
             const isTiny = viewportW < 440
+            const center = Math.round(offset)
+            const currentVisible = new Set<number>()
 
-            cards.forEach((card, slotIdx) => {
+            for (let k = -3; k <= 3; k++) {
+                const slotIdx = ((center + k) % total + total) % total
                 const d = cardDelta(slotIdx, offset, total)
                 const a = Math.abs(d)
+                if (a > 2.4) continue
+
+                currentVisible.add(slotIdx)
+                const card = cards[slotIdx]!
                 const s = d < 0 ? -1 : 1
 
                 card.classList.toggle('cert-lightbox__card--left', d < -0.05)
@@ -351,12 +380,6 @@ const virtualSlots = Array.from({ length: virtualTotal }, (_, slotIndex) => {
                 // mobile, que oculta todo lo no-activo, se veía como que la
                 // imagen simplemente desaparecía a mitad de camino).
                 card.classList.toggle('cert-lightbox__card--active', a < 0.5)
-
-                if (a > 2.4) {
-                    card.style.opacity = '0'
-                    card.style.pointerEvents = 'none'
-                    return
-                }
 
                 let tx: number, tz: number, ry: number, opacity: number, bright: number, sat: number, zi: number
 
@@ -408,11 +431,25 @@ const virtualSlots = Array.from({ length: virtualTotal }, (_, slotIndex) => {
                     }
                     inner.style.width = `min(${vw.toFixed(1)}vw, ${maxPx.toFixed(0)}px)`
                 }
+            }
+
+            // Lo que salió de rango este frame (estaba en la ventana antes,
+            // ya no): se estaciona una sola vez, no en cada frame.
+            previousVisible.forEach((slotIdx) => {
+                if (!currentVisible.has(slotIdx)) parkCard(cards[slotIdx]!)
             })
+            previousVisible = currentVisible
         }
 
+        // Evita recorrer los 84 puntos en cada frame: solo se tocan el punto
+        // que se apaga y el que se prende.
+        let previousActiveDot = -1
+
         function updateActiveDot(realIdx: number) {
-            dots.forEach((dot, i) => dot.classList.toggle('cert-lightbox__dot--active', i === realIdx))
+            if (realIdx === previousActiveDot) return
+            dots[previousActiveDot]?.classList.remove('cert-lightbox__dot--active')
+            dots[realIdx]?.classList.add('cert-lightbox__dot--active')
+            previousActiveDot = realIdx
         }
 
         let offset = 0

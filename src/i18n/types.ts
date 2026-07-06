@@ -40,6 +40,7 @@ export interface Translations {
       experience: string
       contact: string
       downloadCv: string
+      downloading: string
     }
     scrollHintLabel: string
   }
