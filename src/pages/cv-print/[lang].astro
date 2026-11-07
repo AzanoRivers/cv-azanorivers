@@ -1,12 +1,18 @@
 ---
-// Página utilitaria SOLO para generar el PDF descargable (público/cv-andres-rivera.pdf)
-// vía headless Chrome apuntando acá. No está en el <NavDock>, no se linkea desde
+// Página utilitaria SOLO para generar los PDF descargables vía headless Chrome:
+//   /cv-print/es/ -> public/cv-andres-rivera.pdf
+//   /cv-print/en/ -> public/cv-andres-rivera-en.pdf No está en el <NavDock>, no se linkea desde
 // ningún lado del sitio: es un molde de impresión, no una ruta real del CV online.
 import '@/styles/fonts.css'
 import '@/pages/cv-print.css'
-import { getDictionary } from '@/i18n'
+import { getDictionary, locales, type Locale } from '@/i18n'
 
-const t = getDictionary('es')
+export function getStaticPaths() {
+    return locales.map((lang) => ({ params: { lang } }))
+}
+
+const lang = Astro.params.lang as Locale
+const t = getDictionary(lang)
 const LEAF_PATH = 'M12 2C6 8 4 14 12 22C20 14 18 8 12 2Z'
 const VEIN_PATHS = [
     'M12 4C12 9 12 15 12 20',
@@ -61,11 +67,11 @@ const socialPlatforms = [
 ]
 ---
 
-<html lang="es">
+<html lang={lang}>
     <head>
         <meta charset="utf-8" />
         <meta name="robots" content="noindex, nofollow" />
-        <title>CV — Andrés F. Rivera</title>
+        <title>CV - {t.banner.name}</title>
     </head>
     <body>
         <div class="cv-leaves" aria-hidden="true">
@@ -93,7 +99,7 @@ const socialPlatforms = [
                         <a href={SITE_URL}>azanorivers.com</a> / <a href={CV_URL}>cv.azanorivers.com</a>
                     </span>
                     <span class="cv-header__handle">
-                        @azanorivers —{' '}
+                        @azanorivers:{' '}
                         {socialPlatforms.map((s, i) => (
                             <>
                                 {i > 0 && ' · '}

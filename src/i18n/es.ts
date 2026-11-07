@@ -43,6 +43,7 @@ export const es: Translations = {
       experience: 'Experiencia',
       contact: 'Contáctame',
       downloadCv: 'Descargar CV',
+      cvFileUrl: '/cv-andres-rivera.pdf',
       downloading: 'Espere...',
     },
     scrollHintLabel: 'Desplázate hacia abajo',

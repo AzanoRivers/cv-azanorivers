@@ -41,6 +41,11 @@ function applyLocale(locale: Locale): void {
         if (typeof value === 'string') el.alt = value
     })
 
+    document.querySelectorAll<HTMLAnchorElement>('[data-i18n-href]').forEach((el) => {
+        const value = readPath(dict, el.dataset.i18nHref ?? '')
+        if (typeof value === 'string') el.setAttribute('href', value)
+    })
+
     document.querySelectorAll<HTMLElement>('[data-lang-option]').forEach((el) => {
         const isActive = el.dataset.langOption === locale
         el.classList.toggle('language-selector__option--active', isActive)

@@ -57,7 +57,8 @@ const { t } = Astro.props
             </a>
             <a
                 class="banner__download"
-                href="/cv-andres-rivera.pdf"
+                href={t.banner.actions.cvFileUrl}
+                data-i18n-href="banner.actions.cvFileUrl"
                 download
                 data-downloading-label={t.banner.actions.downloading}>
                 <Download className="banner__cta-icon" strokeWidth={1.5} aria-hidden="true" />
